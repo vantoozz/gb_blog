@@ -1,0 +1,23 @@
+{
+    "name": "geekbrains/blog",
+    "require": {
+        "symfony/console": "^5.3",
+        "doctrine/dbal": "^3.1",
+        "php-di/php-di": "^6.3"
+    },
+    "require-dev": {
+        "roave/security-advisories": "dev-latest"
+    },
+    "autoload": {
+        "psr-4": {
+            "GeekBrains\\Blog\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "GeekBrains\\Blog\\UnitTests\\": [
+                "tests/unit"
+            ]
+        }
+    }
+}
