@@ -22,6 +22,22 @@ final class Name
     /**
      * @return string
      */
+    public function getFirst(): string
+    {
+        return $this->first;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSecond(): string
+    {
+        return $this->second;
+    }
+
+    /**
+     * @return string
+     */
     public function __toString(): string
     {
         return $this->first . ' ' . $this->second;
