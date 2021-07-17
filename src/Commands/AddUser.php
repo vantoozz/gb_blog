@@ -10,6 +10,7 @@ use GeekBrains\Blog\Name;
 use GeekBrains\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
 use GeekBrains\Blog\User;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,9 +25,12 @@ final class AddUser extends Command
     /**
      * AddUser constructor.
      * @param UsersRepositoryInterface $usersRepository
+     * @param UuidFactory $uuidFactory
      */
     public function __construct(
-        private UsersRepositoryInterface $usersRepository
+        private UsersRepositoryInterface $usersRepository,
+        private UuidFactory $uuidFactory,
+
     ) {
         parent::__construct('users:create');
     }
@@ -52,12 +56,15 @@ final class AddUser extends Command
     {
         $this->usersRepository->save(
             new User(
-                Uuid::getFactory()->uuid4(),
+                $this->uuidFactory->uuid4(),
                 new Name(
                     $input->getArgument('first_name'),
                     $input->getArgument('last_name')
                 ),
-                Credentials::createFrom($input->getArgument('username'), $input->getArgument('password'))
+                Credentials::createFrom(
+                    $input->getArgument('username'),
+                    $input->getArgument('password')
+                )
             )
         );
 

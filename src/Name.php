@@ -22,7 +22,7 @@ final class Name
     /**
      * @return string
      */
-    public function getFirst(): string
+    public function first(): string
     {
         return $this->first;
     }
@@ -30,7 +30,7 @@ final class Name
     /**
      * @return string
      */
-    public function getSecond(): string
+    public function second(): string
     {
         return $this->second;
     }

@@ -67,7 +67,7 @@ final class Credentials
      */
     public static function createFrom(string $username, string $password): self
     {
-        $salt = random_bytes(128);
+        $salt = bin2hex(random_bytes(40));
         return new self(
             $username,
             self::hash($password, $salt),
