@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
-use GeekBrains\Blog\Commands\AddUser;
+use GeekBrains\Blog\Commands\Users\AddUser;
+use GeekBrains\Blog\Commands\Users\UpdateUser;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
 
@@ -15,6 +16,7 @@ $application->addCommands(array_map(
     static fn(string $className) => $container->get($className),
     [
         AddUser::class,
+        UpdateUser::class,
     ]
 ));
 

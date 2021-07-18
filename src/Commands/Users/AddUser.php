@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 
-namespace GeekBrains\Blog\Commands;
+namespace GeekBrains\Blog\Commands\Users;
 
 
 use Exception;
@@ -18,7 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class AddUser
- * @package GeekBrains\Blog\Commands
+ * @package GeekBrains\Blog\Commands\Users
  */
 final class AddUser extends Command
 {
