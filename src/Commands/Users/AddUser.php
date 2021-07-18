@@ -53,6 +53,7 @@ final class AddUser extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $username = $input->getArgument('username');
+
         if ($this->usernameTaken($username)) {
             $output->writeln("Username already taken: $username");
             return Command::FAILURE;
