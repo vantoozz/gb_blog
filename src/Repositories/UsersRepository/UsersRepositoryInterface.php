@@ -11,11 +11,11 @@ use GeekBrains\Blog\User;
 interface UsersRepositoryInterface
 {
     /**
-     * @param int $userId
+     * @param string $username
      * @return User
      * @throws UserNotFoundException
      */
-    public function get(int $userId): User;
+    public function getByUsername(string $username): User;
 
     /**
      * @param User $user

@@ -11,11 +11,11 @@ final class Name
     /**
      * Name constructor.
      * @param string $first
-     * @param string $second
+     * @param string $last
      */
     public function __construct(
         private string $first,
-        private string $second
+        private string $last
     ) {
     }
 
@@ -30,9 +30,9 @@ final class Name
     /**
      * @return string
      */
-    public function second(): string
+    public function last(): string
     {
-        return $this->second;
+        return $this->last;
     }
 
     /**
@@ -40,6 +40,6 @@ final class Name
      */
     public function __toString(): string
     {
-        return $this->first . ' ' . $this->second;
+        return $this->first . ' ' . $this->last;
     }
 }

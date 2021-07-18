@@ -7,6 +7,6 @@ use GeekBrains\Blog\AppException;
 /**
  * Class UsersRepositoryException
  */
-abstract class UsersRepositoryException extends AppException
+class UsersRepositoryException extends AppException
 {
 }
