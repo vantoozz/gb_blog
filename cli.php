@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 use GeekBrains\Blog\Commands\Posts\CreatePost;
 use GeekBrains\Blog\Commands\Posts\GetPostsByAuthor;
 use GeekBrains\Blog\Commands\Users\CreateUser;

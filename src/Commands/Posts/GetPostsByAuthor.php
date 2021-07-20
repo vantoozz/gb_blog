@@ -51,8 +51,6 @@ final class GetPostsByAuthor extends Command
             return Command::FAILURE;
         }
 
-        $posts = $this->postsRepository->getByAuthor($user->uuid());
-
         $table = new Table($output);
 
         $table
@@ -61,9 +59,9 @@ final class GetPostsByAuthor extends Command
                 static fn(Post $post) => [
                     $post->uuid(),
                     $post->title(),
-                    $post->text(),
+                    mb_strimwidth($post->text(), 0, 50, '...'),
                 ],
-                $posts
+                $this->postsRepository->getByAuthor($user->uuid())
             ));
 
         $table->render();

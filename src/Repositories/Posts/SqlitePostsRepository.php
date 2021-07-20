@@ -87,7 +87,7 @@ SQL;
                 new UUID($row['uuid']),
                 $authorUuid,
                 $row['title'],
-                mb_strimwidth($row['text'], 0, 50, '...'),
+                $row['text'],
             ),
             $result
         );
