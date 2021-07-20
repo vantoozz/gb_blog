@@ -5,6 +5,7 @@ namespace GeekBrains\Blog\Repositories\Posts;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DbalException;
 use GeekBrains\Blog\Post;
+use GeekBrains\Blog\UUID;
 
 /**
  * Class SqlitePostsRepository
@@ -23,6 +24,7 @@ final class SqlitePostsRepository implements PostsRepositoryInterface
 
     /**
      * @param Post $post
+     * @throws PostsRepositoryException
      */
     public function save(Post $post): void
     {
@@ -61,5 +63,33 @@ SQL;
         } catch (DbalException $e) {
             throw new PostsRepositoryException($e->getMessage(), $e->getCode(), $e);
         }
+    }
+
+    /**
+     * @param UUID $authorUuid
+     * @return Post[]
+     * @throws PostsRepositoryException
+     */
+    public function getByAuthor(UUID $authorUuid): array
+    {
+        try {
+            /** @var array $result */
+            $result = $this->connection->executeQuery(
+                'SELECT * FROM posts WHERE author_uuid = :author_uuid',
+                ['author_uuid' => (string)$authorUuid]
+            )->fetchAllAssociative();
+        } catch (DbalException $e) {
+            throw new PostsRepositoryException($e->getMessage(), $e->getCode(), $e);
+        }
+
+        return array_map(
+            static fn(array $row) => new Post(
+                new UUID($row['uuid']),
+                $authorUuid,
+                $row['title'],
+                mb_strimwidth($row['text'], 0, 50, '...'),
+            ),
+            $result
+        );
     }
 }

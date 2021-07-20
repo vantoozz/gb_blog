@@ -3,6 +3,7 @@
 namespace GeekBrains\Blog\Repositories\Posts;
 
 use GeekBrains\Blog\Post;
+use GeekBrains\Blog\UUID;
 
 /**
  * Interface PostsRepositoryInterface
@@ -12,6 +13,14 @@ interface PostsRepositoryInterface
 {
     /**
      * @param Post $post
+     * @throws PostsRepositoryException
      */
     public function save(Post $post): void;
+
+    /**
+     * @param UUID $authorUuid
+     * @return Post[]
+     * @throws PostsRepositoryException
+     */
+    public function getByAuthor(UUID $authorUuid): array;
 }

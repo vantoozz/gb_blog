@@ -2,6 +2,7 @@
 
 
 use GeekBrains\Blog\Commands\Posts\CreatePost;
+use GeekBrains\Blog\Commands\Posts\GetPostsByAuthor;
 use GeekBrains\Blog\Commands\Users\CreateUser;
 use GeekBrains\Blog\Commands\Users\UpdateUser;
 use Psr\Container\ContainerInterface;
@@ -20,6 +21,7 @@ $application->addCommands(array_map(
         CreateUser::class,
         UpdateUser::class,
         CreatePost::class,
+        GetPostsByAuthor::class,
     ]
 ));
 

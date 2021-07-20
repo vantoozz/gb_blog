@@ -3,33 +3,28 @@
 namespace GeekBrains\Blog\Commands\Posts;
 
 use Exception;
-use GeekBrains\Blog\Credentials;
-use GeekBrains\Blog\Name;
 use GeekBrains\Blog\Post;
 use GeekBrains\Blog\Repositories\Posts\PostsRepositoryInterface;
 use GeekBrains\Blog\Repositories\Users\UserNotFoundException;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
-use GeekBrains\Blog\User;
-use GeekBrains\Blog\UUID;
-use Ramsey\Uuid\UuidFactoryInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class CreatePost
+ * Class GetPostsByAuthor
  * @package GeekBrains\Blog\Commands\Posts
  */
-final class CreatePost extends Command
+final class GetPostsByAuthor extends Command
 {
 
     public function __construct(
         private UsersRepositoryInterface $usersRepository,
         private PostsRepositoryInterface $postsRepository,
-        private UuidFactoryInterface $uuidFactory,
     ) {
-        parent::__construct('posts:create');
+        parent::__construct('posts:by-author');
     }
 
     /**
@@ -38,11 +33,8 @@ final class CreatePost extends Command
     protected function configure(): void
     {
         $this
-            ->setDescription('Creates new post')
-            ->addArgument('username', InputArgument::REQUIRED, 'Username')
-            ->addArgument('title', InputArgument::REQUIRED, 'Title')
-            ->addArgument('text', InputArgument::REQUIRED, 'Text')
-        ;
+            ->setDescription('Finds posts by author')
+            ->addArgument('username', InputArgument::REQUIRED, 'Username');
     }
 
     /**
@@ -59,19 +51,22 @@ final class CreatePost extends Command
             return Command::FAILURE;
         }
 
+        $posts = $this->postsRepository->getByAuthor($user->uuid());
 
-        $uuid = new UUID($this->uuidFactory->uuid4()->toString());
+        $table = new Table($output);
 
-        $this->postsRepository->save(
-            new Post(
-                $uuid,
-                $user->uuid(),
-                $input->getArgument('title'),
-                $input->getArgument('text'),
-            )
-        );
+        $table
+            ->setHeaders(['UUID', 'Title', 'Text'])
+            ->setRows(array_map(
+                static fn(Post $post) => [
+                    $post->uuid(),
+                    $post->title(),
+                    $post->text(),
+                ],
+                $posts
+            ));
 
-        $output->writeln("Posts created: $uuid");
+        $table->render();
 
         return Command::SUCCESS;
     }
