@@ -2,8 +2,6 @@
 
 namespace GeekBrains\Blog;
 
-use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\UuidInterface;
 
 /**
  * Class User
@@ -13,21 +11,21 @@ final class User
 {
     /**
      * User constructor.
-     * @param Uuid $uuid
+     * @param UUID $uuid
      * @param Name $name
      * @param Credentials $credentials
      */
     public function __construct(
-        private UuidInterface $uuid,
+        private UUID $uuid,
         private Name $name,
         private Credentials $credentials
     ) {
     }
 
     /**
-     * @return UuidInterface
+     * @return UUID
      */
-    public function uuid(): UuidInterface
+    public function uuid(): UUID
     {
         return $this->uuid;
     }

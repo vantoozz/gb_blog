@@ -1,14 +1,13 @@
 <?php declare(strict_types=1);
 
-
 namespace GeekBrains\Blog\Commands\Users;
-
 
 use Exception;
 use GeekBrains\Blog\Credentials;
 use GeekBrains\Blog\Name;
-use GeekBrains\Blog\Repositories\UsersRepository\UserNotFoundException;
-use GeekBrains\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
+
+use GeekBrains\Blog\Repositories\Users\UserNotFoundException;
+use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
 use GeekBrains\Blog\User;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -59,7 +58,6 @@ final class UpdateUser extends Command
                 'Password',
             );
     }
-
 
     /**
      * @throws Exception

@@ -1,10 +1,8 @@
 <?php declare(strict_types=1);
 
-
 namespace GeekBrains\Blog;
 
 use Exception;
-use JetBrains\PhpStorm\Pure;
 
 /**
  * Class Credentials
@@ -26,12 +24,38 @@ final class Credentials
     }
 
     /**
+     * @param string $username
+     * @param string $password
+     * @return static
+     * @throws Exception
+     */
+    public static function createFrom(string $username, string $password): self
+    {
+        $salt = bin2hex(random_bytes(40));
+        return new self(
+            $username,
+            self::hash($password, $salt),
+            $salt
+        );
+    }
+
+    /**
      * @param string $password
      * @return bool
      */
     public function check(string $password): bool
     {
         return $this->hashedPassword === self::hash($password, $this->salt);
+    }
+
+    /**
+     * @param string $password
+     * @param string $salt
+     * @return string
+     */
+    private static function hash(string $password, string $salt): string
+    {
+        return hash('whirlpool', $password . $salt);
     }
 
     /**
@@ -56,32 +80,5 @@ final class Credentials
     public function salt(): string
     {
         return $this->salt;
-    }
-
-
-    /**
-     * @param string $username
-     * @param string $password
-     * @return static
-     * @throws Exception
-     */
-    public static function createFrom(string $username, string $password): self
-    {
-        $salt = bin2hex(random_bytes(40));
-        return new self(
-            $username,
-            self::hash($password, $salt),
-            $salt
-        );
-    }
-
-    /**
-     * @param string $password
-     * @param string $salt
-     * @return string
-     */
-    private static function hash(string $password, string $salt): string
-    {
-        return hash('whirlpool', $password . $salt);
     }
 }

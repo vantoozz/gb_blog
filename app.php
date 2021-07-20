@@ -1,6 +1,8 @@
 <?php declare(strict_types=1);
 
-use GeekBrains\Blog\Commands\Users\AddUser;
+
+use GeekBrains\Blog\Commands\Posts\CreatePost;
+use GeekBrains\Blog\Commands\Users\CreateUser;
 use GeekBrains\Blog\Commands\Users\UpdateUser;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
@@ -15,8 +17,9 @@ $application->setName('GeekBrains\' Blog');
 $application->addCommands(array_map(
     static fn(string $className) => $container->get($className),
     [
-        AddUser::class,
+        CreateUser::class,
         UpdateUser::class,
+        CreatePost::class,
     ]
 ));
 

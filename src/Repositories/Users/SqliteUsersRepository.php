@@ -1,19 +1,17 @@
 <?php declare(strict_types=1);
 
-
-namespace GeekBrains\Blog\Repositories\UsersRepository;
-
+namespace GeekBrains\Blog\Repositories\Users;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DbalException;
 use GeekBrains\Blog\Credentials;
 use GeekBrains\Blog\Name;
 use GeekBrains\Blog\User;
-use Ramsey\Uuid\UuidFactoryInterface;
+use GeekBrains\Blog\UUID;
 
 /**
  * Class SqliteUsersRepository
- * @package GeekBrains\Blog\Repositories\UsersRepository
+ * @package GeekBrains\Blog\Repositories\Users
  */
 final class SqliteUsersRepository implements UsersRepositoryInterface
 {
@@ -21,11 +19,9 @@ final class SqliteUsersRepository implements UsersRepositoryInterface
     /**
      * SqliteUsersRepository constructor.
      * @param Connection $connection
-     * @param UuidFactoryInterface $uuidFactory
      */
     public function __construct(
-        private Connection $connection,
-        private UuidFactoryInterface $uuidFactory,
+        private Connection $connection
     ) {
     }
 
@@ -51,12 +47,11 @@ final class SqliteUsersRepository implements UsersRepositoryInterface
 
         $data = $result[0];
 
-        $user = new User(
-            $this->uuidFactory->fromString($data['uuid']),
+        return new User(
+            new UUID($data['uuid']),
             new Name($data['first_name'], $data['last_name']),
             new Credentials($data['username'], $data['password_hash'], $data['password_salt'])
         );
-        return $user;
     }
 
     /**

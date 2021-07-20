@@ -1,9 +1,12 @@
 <?php declare(strict_types=1);
 
 use DI\ContainerBuilder;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
-use GeekBrains\Blog\Repositories\UsersRepository\SqliteUsersRepository;
-use GeekBrains\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
+use GeekBrains\Blog\Repositories\Posts\PostsRepositoryInterface;
+use GeekBrains\Blog\Repositories\Posts\SqlitePostsRepository;
+use GeekBrains\Blog\Repositories\Users\SqliteUsersRepository;
+use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
 use Psr\Container\ContainerInterface;
 use Ramsey\Uuid\UuidFactory;
 use Ramsey\Uuid\UuidFactoryInterface;
@@ -19,13 +22,17 @@ $container->set(UuidFactoryInterface::class,
     DI\factory(fn() => new UuidFactory())
 );
 
+$container->set(Connection::class,
+    DI\factory(fn() => DriverManager::getConnection([
+        'url' => 'sqlite:///blog.sqlite',
+    ])));
+
 $container->set(UsersRepositoryInterface::class,
-    DI\factory(fn(ContainerInterface $container) => new SqliteUsersRepository(
-        DriverManager::getConnection([
-            'url' => 'sqlite:///blog.sqlite',
-        ]),
-        $container->get(UuidFactoryInterface::class)
-    ))
+    DI\factory(fn(ContainerInterface $container) => $container->get(SqliteUsersRepository::class))
+);
+
+$container->set(PostsRepositoryInterface::class,
+    DI\factory(fn(ContainerInterface $container) => $container->get(SqlitePostsRepository::class))
 );
 
 return $container;
