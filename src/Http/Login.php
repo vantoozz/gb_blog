@@ -1,14 +1,16 @@
 <?php declare(strict_types=1);
 
-
 namespace GeekBrains\Blog\Http;
-
 
 use GeekBrains\Blog\Repositories\Users\UserNotFoundException;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Class Login
+ * @package GeekBrains\Blog\Http
+ */
 final class Login implements ActionInterface
 {
     /**
@@ -20,6 +22,10 @@ final class Login implements ActionInterface
     ) {
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function handle(Request $request): JsonResponse
     {
         $username = $request->get('username');
@@ -38,6 +44,8 @@ final class Login implements ActionInterface
         if (!$user->credentials()->check($password)) {
             return new JsonResponse(['success' => false]);
         }
+
+        $request->getSession()->set("csdcsd", 324234);
 
         return new JsonResponse(['success' => true]);
     }
