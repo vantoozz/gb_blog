@@ -1,28 +1,29 @@
 <?php declare(strict_types=1);
 
-namespace GeekBrains\Blog\Http;
+namespace GeekBrains\Blog\Http\Posts;
 
+use GeekBrains\Blog\Http\ActionInterface;
+use GeekBrains\Blog\Http\Auth\AuthInterface;
+use GeekBrains\Blog\Http\Auth\NotAuthenticatedException;
 use GeekBrains\Blog\Post;
 use GeekBrains\Blog\Repositories\Posts\PostsRepositoryInterface;
-use GeekBrains\Blog\Repositories\Users\UserNotFoundException;
-use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class PostsByAuthor
+ * Class MyPosts
  * @package GeekBrains\Blog\Http
  */
-final class PostsByAuthor implements ActionInterface
+final class MyPosts implements ActionInterface
 {
 
     /**
-     * PostsByAuthor constructor.
-     * @param UsersRepositoryInterface $usersRepository
+     * MyPosts constructor.
+     * @param AuthInterface $auth
      * @param PostsRepositoryInterface $postsRepository
      */
     public function __construct(
-        private UsersRepositoryInterface $usersRepository,
+        private AuthInterface $auth,
         private PostsRepositoryInterface $postsRepository,
     ) {
     }
@@ -33,16 +34,13 @@ final class PostsByAuthor implements ActionInterface
      */
     public function handle(Request $request): JsonResponse
     {
-        $username = $request->get('username');
-
-        if (empty($username)) {
-            return new JsonResponse([]);
-        }
-
         try {
-            $user = $this->usersRepository->getByUsername($username);
-        } catch (UserNotFoundException) {
-            return new JsonResponse([]);
+            $user = $this->auth->user($request);
+        } catch (NotAuthenticatedException) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'Not authenticated',
+            ]);
         }
 
         return new JsonResponse(array_map(

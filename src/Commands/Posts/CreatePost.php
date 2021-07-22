@@ -3,13 +3,10 @@
 namespace GeekBrains\Blog\Commands\Posts;
 
 use Exception;
-use GeekBrains\Blog\Credentials;
-use GeekBrains\Blog\Name;
 use GeekBrains\Blog\Post;
 use GeekBrains\Blog\Repositories\Posts\PostsRepositoryInterface;
 use GeekBrains\Blog\Repositories\Users\UserNotFoundException;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
-use GeekBrains\Blog\User;
 use GeekBrains\Blog\UUID;
 use Ramsey\Uuid\UuidFactoryInterface;
 use Symfony\Component\Console\Command\Command;
@@ -41,8 +38,7 @@ final class CreatePost extends Command
             ->setDescription('Creates new post')
             ->addArgument('username', InputArgument::REQUIRED, 'Username')
             ->addArgument('title', InputArgument::REQUIRED, 'Title')
-            ->addArgument('text', InputArgument::REQUIRED, 'Text')
-        ;
+            ->addArgument('text', InputArgument::REQUIRED, 'Text');
     }
 
     /**
@@ -58,7 +54,6 @@ final class CreatePost extends Command
             $output->writeln("User not found: $username");
             return Command::FAILURE;
         }
-
 
         $uuid = new UUID($this->uuidFactory->uuid4()->toString());
 

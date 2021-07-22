@@ -2,7 +2,6 @@
 
 namespace GeekBrains\Blog;
 
-
 /**
  * Class User
  * @package GeekBrains\Blog
