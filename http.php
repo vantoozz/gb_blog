@@ -6,7 +6,6 @@ use GeekBrains\Blog\Http\PostsByAuthor;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
 
 /** @var ContainerInterface $container */
 $container = require __DIR__ . '/bootstrap.php';
@@ -28,12 +27,6 @@ if (!array_key_exists($uri, $routes)) {
     (new Response(status: Response::HTTP_NOT_FOUND))->send();
     return;
 }
-
-$session=new Session();
-$request->setSession($session);
-
-
-$session->get("csdcsd");
 
 /** @var ActionInterface $action */
 $action = $container->get($routes[$uri]);
