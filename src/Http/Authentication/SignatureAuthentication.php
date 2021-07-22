@@ -21,6 +21,10 @@ final class SignatureAuthentication implements AuthenticationInterface
      *
      */
     private const SIGNATURE_PREFIX = 'bearer ';
+    /**
+     *
+     */
+    private const TOKEN_DELIMITER = ':';
 
     /**
      * SignatureAuthentication constructor.
@@ -50,25 +54,20 @@ final class SignatureAuthentication implements AuthenticationInterface
 
         $token = substr($header, strlen(self::SIGNATURE_PREFIX));
 
-        $parts = explode(':', $token);
+        $parts = explode(self::TOKEN_DELIMITER, $token);
 
-        if (count($parts) !== 2) {
+        if (count($parts) < 2) {
             throw new NotAuthenticatedException('Malformed token');
         }
 
-        $username = $parts[0];
-        if (empty($username)) {
-            throw new NotAuthenticatedException('No username in token');
-        }
-
-        $username = $parts[0];
-        if (empty($username)) {
-            throw new NotAuthenticatedException('No username in token');
-        }
-
-        $signature = $parts[1];
+        $signature = array_pop($parts);
         if (empty($signature)) {
             throw new NotAuthenticatedException('No signature in token');
+        }
+
+        $username = implode(self::TOKEN_DELIMITER, $parts);
+        if (empty($username)) {
+            throw new NotAuthenticatedException('No username in token');
         }
 
         try {
