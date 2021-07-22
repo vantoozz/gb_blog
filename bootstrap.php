@@ -9,7 +9,6 @@ use GeekBrains\Blog\Repositories\Posts\PostsRepositoryInterface;
 use GeekBrains\Blog\Repositories\Posts\SqlitePostsRepository;
 use GeekBrains\Blog\Repositories\Users\SqliteUsersRepository;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
-use Psr\Container\ContainerInterface;
 use Ramsey\Uuid\UuidFactory;
 use Ramsey\Uuid\UuidFactoryInterface;
 
@@ -20,25 +19,29 @@ $builder->useAutowiring(true);
 $builder->useAnnotations(false);
 $container = $builder->build();
 
-$container->set(UuidFactoryInterface::class,
-    DI\factory(fn() => new UuidFactory())
-);
-
 $container->set(Connection::class,
     DI\factory(fn() => DriverManager::getConnection([
         'url' => 'sqlite:///blog.sqlite',
     ])));
 
-$container->set(UsersRepositoryInterface::class,
-    DI\factory(fn(ContainerInterface $container) => $container->get(SqliteUsersRepository::class))
+$container->set(
+    UuidFactoryInterface::class,
+    DI\get(UuidFactory::class)
 );
 
-$container->set(PostsRepositoryInterface::class,
-    DI\factory(fn(ContainerInterface $container) => $container->get(SqlitePostsRepository::class))
+$container->set(
+    UsersRepositoryInterface::class,
+    DI\get(SqliteUsersRepository::class)
 );
 
-$container->set(AuthenticationInterface::class,
-    DI\factory(fn(ContainerInterface $container) => $container->get(NaiveAuthentication::class))
+$container->set(
+    PostsRepositoryInterface::class,
+    DI\get(SqlitePostsRepository::class)
+);
+
+$container->set(
+    AuthenticationInterface::class,
+    DI\get(NaiveAuthentication::class)
 );
 
 return $container;
