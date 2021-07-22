@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace GeekBrains\Blog\Http\Auth;
+namespace GeekBrains\Blog\Http\Authentication;
 
 use GeekBrains\Blog\User;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Interface AuthInterface
- * @package GeekBrains\Blog\Auth
+ * Interface AuthenticationInterface
+ * @package GeekBrains\Blog\Http\Authentication
  */
-interface AuthInterface
+interface AuthenticationInterface
 {
     /**
      * @param Request $request

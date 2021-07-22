@@ -4,7 +4,7 @@ namespace GeekBrains\Blog\Http\Posts;
 
 use GeekBrains\Blog\Exceptions\InvalidArgumentException;
 use GeekBrains\Blog\Http\ActionInterface;
-use GeekBrains\Blog\Http\Auth\AuthInterface;
+use GeekBrains\Blog\Http\Authentication\AuthenticationInterface;
 use GeekBrains\Blog\Repositories\Posts\PostsRepositoryInterface;
 use GeekBrains\Blog\UUID;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,10 +16,10 @@ final class DeletePost implements ActionInterface
     /**
      * DeletePost constructor.
      * @param PostsRepositoryInterface $postsRepository
-     * @param AuthInterface $auth
+     * @param AuthenticationInterface $auth
      */
     public function __construct(
-        private AuthInterface $auth,
+        private AuthenticationInterface $auth,
         private PostsRepositoryInterface $postsRepository,
     ) {
     }

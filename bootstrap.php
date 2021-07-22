@@ -3,6 +3,8 @@
 use DI\ContainerBuilder;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
+use GeekBrains\Blog\Http\Authentication\AuthenticationInterface;
+use GeekBrains\Blog\Http\Authentication\NaiveAuthentication;
 use GeekBrains\Blog\Repositories\Posts\PostsRepositoryInterface;
 use GeekBrains\Blog\Repositories\Posts\SqlitePostsRepository;
 use GeekBrains\Blog\Repositories\Users\SqliteUsersRepository;
@@ -33,6 +35,10 @@ $container->set(UsersRepositoryInterface::class,
 
 $container->set(PostsRepositoryInterface::class,
     DI\factory(fn(ContainerInterface $container) => $container->get(SqlitePostsRepository::class))
+);
+
+$container->set(AuthenticationInterface::class,
+    DI\factory(fn(ContainerInterface $container) => $container->get(NaiveAuthentication::class))
 );
 
 return $container;

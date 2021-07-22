@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace GeekBrains\Blog\Http\Auth;
+namespace GeekBrains\Blog\Http\Authentication;
 
 use GeekBrains\Blog\Repositories\Users\UserNotFoundException;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
@@ -8,10 +8,10 @@ use GeekBrains\Blog\User;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class NaiveRequestAuth
- * @package GeekBrains\Blog\Auth
+ * Class NaiveAuthentication
+ * @package GeekBrains\Blog\Http\Authentication
  */
-final class NaiveAuth implements AuthInterface
+final class NaiveAuthentication implements AuthenticationInterface
 {
 
     /**

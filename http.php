@@ -1,9 +1,6 @@
 <?php declare(strict_types=1);
 
-use DI\Container;
 use GeekBrains\Blog\Http\ActionInterface;
-use GeekBrains\Blog\Http\Auth\AuthInterface;
-use GeekBrains\Blog\Http\Auth\NaiveAuth;
 use GeekBrains\Blog\Http\Login;
 use GeekBrains\Blog\Http\Posts\MyPosts;
 use GeekBrains\Blog\Http\Posts\PostsByAuthor;
@@ -11,7 +8,7 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/** @var Container $container */
+/** @var ContainerInterface $container */
 $container = require __DIR__ . '/bootstrap.php';
 
 $request = Request::createFromGlobals();
@@ -32,10 +29,6 @@ if (!array_key_exists($uri, $routes)) {
     (new Response(status: Response::HTTP_NOT_FOUND))->send();
     return;
 }
-
-$container->set(AuthInterface::class,
-    DI\factory(fn(ContainerInterface $container) => $container->get(NaiveAuth::class))
-);
 
 /** @var ActionInterface $action */
 $action = $container->get($routes[$uri]);

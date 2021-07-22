@@ -3,8 +3,8 @@
 namespace GeekBrains\Blog\Http\Posts;
 
 use GeekBrains\Blog\Http\ActionInterface;
-use GeekBrains\Blog\Http\Auth\AuthInterface;
-use GeekBrains\Blog\Http\Auth\NotAuthenticatedException;
+use GeekBrains\Blog\Http\Authentication\AuthenticationInterface;
+use GeekBrains\Blog\Http\Authentication\NotAuthenticatedException;
 use GeekBrains\Blog\Post;
 use GeekBrains\Blog\Repositories\Posts\PostsRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,11 +19,11 @@ final class MyPosts implements ActionInterface
 
     /**
      * MyPosts constructor.
-     * @param AuthInterface $auth
+     * @param AuthenticationInterface $auth
      * @param PostsRepositoryInterface $postsRepository
      */
     public function __construct(
-        private AuthInterface $auth,
+        private AuthenticationInterface $auth,
         private PostsRepositoryInterface $postsRepository,
     ) {
     }
