@@ -25,15 +25,6 @@ final class NaiveAuthentication implements AuthenticationInterface
 
     /**
      * @param Request $request
-     * @return bool
-     */
-    public function hasUser(Request $request): bool
-    {
-        return $request->query->has('username');
-    }
-
-    /**
-     * @param Request $request
      * @return User
      * @throws NotAuthenticatedException
      */

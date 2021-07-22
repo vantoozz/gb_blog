@@ -13,12 +13,6 @@ interface AuthenticationInterface
 {
     /**
      * @param Request $request
-     * @return bool
-     */
-    public function hasUser(Request $request): bool;
-
-    /**
-     * @param Request $request
      * @return User
      * @throws NotAuthenticatedException
      */

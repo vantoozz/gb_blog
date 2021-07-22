@@ -4,7 +4,7 @@ use DI\ContainerBuilder;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use GeekBrains\Blog\Http\Authentication\AuthenticationInterface;
-use GeekBrains\Blog\Http\Authentication\NaiveAuthentication;
+use GeekBrains\Blog\Http\Authentication\SignatureAuthentication;
 use GeekBrains\Blog\Repositories\Posts\PostsRepositoryInterface;
 use GeekBrains\Blog\Repositories\Posts\SqlitePostsRepository;
 use GeekBrains\Blog\Repositories\Users\SqliteUsersRepository;
@@ -41,7 +41,7 @@ $container->set(
 
 $container->set(
     AuthenticationInterface::class,
-    DI\get(NaiveAuthentication::class)
+    DI\get(SignatureAuthentication::class)
 );
 
 return $container;
