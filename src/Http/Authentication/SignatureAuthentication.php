@@ -45,14 +45,14 @@ final class SignatureAuthentication implements AuthenticationInterface
         $header = $request->headers->get('Authorization');
 
         if (empty($header)) {
-            throw new NotAuthenticatedException('Not authorization header');
+            throw new NotAuthenticatedException('No authorization header');
         }
 
-        if (0 !== stripos(mb_strtolower($header), self::SIGNATURE_PREFIX)) {
+        if (0 !== mb_stripos(mb_strtolower($header), self::SIGNATURE_PREFIX)) {
             throw new NotAuthenticatedException('Malformed authorization header');
         }
 
-        $token = substr($header, strlen(self::SIGNATURE_PREFIX));
+        $token = mb_substr($header, strlen(self::SIGNATURE_PREFIX));
 
         $parts = explode(self::TOKEN_DELIMITER, $token);
 
