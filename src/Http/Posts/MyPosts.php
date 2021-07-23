@@ -12,18 +12,18 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class MyPosts
- * @package GeekBrains\Blog\Http
+ * @package GeekBrains\Blog\Http\Posts
  */
 final class MyPosts implements ActionInterface
 {
 
     /**
      * MyPosts constructor.
-     * @param AuthenticationInterface $auth
+     * @param AuthenticationInterface $authentication
      * @param PostsRepositoryInterface $postsRepository
      */
     public function __construct(
-        private AuthenticationInterface $auth,
+        private AuthenticationInterface $authentication,
         private PostsRepositoryInterface $postsRepository,
     ) {
     }
@@ -35,7 +35,7 @@ final class MyPosts implements ActionInterface
     public function handle(Request $request): JsonResponse
     {
         try {
-            $user = $this->auth->user($request);
+            $user = $this->authentication->user($request);
         } catch (NotAuthenticatedException) {
             return new JsonResponse([
                 'success' => false,

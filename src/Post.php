@@ -8,6 +8,13 @@ namespace GeekBrains\Blog;
  */
 final class Post
 {
+    /**
+     * Post constructor.
+     * @param UUID $uuid
+     * @param UUID $authorUuid
+     * @param string $title
+     * @param string $text
+     */
     public function __construct(
         private UUID $uuid,
         private UUID $authorUuid,

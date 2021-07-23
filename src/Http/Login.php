@@ -2,6 +2,7 @@
 
 namespace GeekBrains\Blog\Http;
 
+use GeekBrains\Blog\Http\Authentication\AuthenticationInterface;
 use GeekBrains\Blog\Repositories\Users\UserNotFoundException;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,9 +17,11 @@ final class Login implements ActionInterface
     /**
      * Login constructor.
      * @param UsersRepositoryInterface $usersRepository
+     * @param AuthenticationInterface $authentication
      */
     public function __construct(
         private UsersRepositoryInterface $usersRepository,
+        private AuthenticationInterface $authentication,
     ) {
     }
 
@@ -45,8 +48,9 @@ final class Login implements ActionInterface
             return new JsonResponse(['success' => false]);
         }
 
-        $request->getSession()->set("csdcsd", 324234);
-
-        return new JsonResponse(['success' => true]);
+        return new JsonResponse([
+            'success' => true,
+            'token' => $this->authentication->token($user),
+        ]);
     }
 }

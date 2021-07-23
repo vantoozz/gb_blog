@@ -83,13 +83,62 @@ SQL;
         }
 
         return array_map(
-            static fn(array $row) => new Post(
-                new UUID($row['uuid']),
-                $authorUuid,
-                $row['title'],
-                $row['text'],
-            ),
+            fn(array $row) => $this->makePost($row),
             $result
         );
+    }
+
+    /**
+     * @param array $data
+     * @return Post
+     */
+    private function makePost(array $data): Post
+    {
+        return new Post(
+            new UUID($data['uuid']),
+            new UUID($data['author_uuid']),
+            $data['title'],
+            $data['text'],
+        );
+    }
+
+    /**
+     * @param UUID $uuid
+     */
+    public function delete(UUID $uuid): void
+    {
+        try {
+            $this->connection->executeStatement(
+                'DELETE FROM posts WHERE uuid = :uuid',
+                ['uuid' => (string)$uuid]
+            );
+        } catch (DbalException $e) {
+            throw new PostsRepositoryException($e->getMessage(), $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * @param UUID $uuid
+     * @return Post
+     * @throws PostNotFoundException
+     * @throws PostsRepositoryException
+     */
+    public function get(UUID $uuid): Post
+    {
+        try {
+            /** @var array $result */
+            $result = $this->connection->executeQuery(
+                'SELECT * FROM posts WHERE uuid = :uuid',
+                ['uuid' => $uuid]
+            )->fetchAllAssociative();
+        } catch (DbalException $e) {
+            throw new PostsRepositoryException($e->getMessage(), $e->getCode(), $e);
+        }
+
+        if (count($result) !== 1) {
+            throw new PostNotFoundException("Cannot find post by uuid: $uuid");
+        }
+
+        return $this->makePost($result[0]);
     }
 }

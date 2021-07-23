@@ -41,4 +41,13 @@ final class NaiveAuthentication implements AuthenticationInterface
             throw new NotAuthenticatedException("No such user: $username");
         }
     }
+
+    /**
+     * @param User $user
+     * @return string
+     */
+    public function token(User $user): string
+    {
+        return $user->credentials()->username();
+    }
 }

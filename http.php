@@ -2,6 +2,7 @@
 
 use GeekBrains\Blog\Http\ActionInterface;
 use GeekBrains\Blog\Http\Login;
+use GeekBrains\Blog\Http\Posts\DeletePost;
 use GeekBrains\Blog\Http\Posts\MyPosts;
 use GeekBrains\Blog\Http\Posts\PostsByAuthor;
 use Psr\Container\ContainerInterface;
@@ -23,6 +24,7 @@ $routes = [
     '/login' => Login::class,
     '/posts/author' => PostsByAuthor::class,
     '/posts/my' => MyPosts::class,
+    '/posts/delete' => DeletePost::class,
 ];
 
 if (!array_key_exists($uri, $routes)) {

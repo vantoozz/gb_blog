@@ -18,6 +18,20 @@ interface PostsRepositoryInterface
     public function save(Post $post): void;
 
     /**
+     * @param UUID $uuid
+     * @return Post
+     * @throws PostNotFoundException
+     * @throws PostsRepositoryException
+     */
+    public function get(UUID $uuid): Post;
+
+    /**
+     * @param UUID $uuid
+     * @throws PostsRepositoryException
+     */
+    public function delete(UUID $uuid): void;
+
+    /**
      * @param UUID $authorUuid
      * @return Post[]
      * @throws PostsRepositoryException

@@ -26,6 +26,15 @@ final class UUID
     }
 
     /**
+     * @param UUID $other
+     * @return bool
+     */
+    public function equals(UUID $other): bool
+    {
+        return (string)$this === (string)$other;
+    }
+
+    /**
      * @return string
      */
     public function __toString(): string

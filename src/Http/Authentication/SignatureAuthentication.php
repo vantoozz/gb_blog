@@ -91,4 +91,13 @@ final class SignatureAuthentication implements AuthenticationInterface
     {
         return hash('sha256', $user->uuid() . self::SECRET);
     }
+
+    /**
+     * @param User $user
+     * @return string
+     */
+    public function token(User $user): string
+    {
+        return $user->credentials()->username() . self::TOKEN_DELIMITER . $this->signature($user);
+    }
 }

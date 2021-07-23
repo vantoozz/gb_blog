@@ -17,4 +17,9 @@ interface AuthenticationInterface
      * @throws NotAuthenticatedException
      */
     public function user(Request $request): User;
+
+    /**
+     * @return User
+     */
+    public function token(User $user): string;
 }
