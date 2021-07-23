@@ -25,4 +25,3 @@ $application->addCommands(array_map(
 ));
 
 $application->run();
-
