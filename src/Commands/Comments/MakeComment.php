@@ -1,9 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace GeekBrains\Blog\Commands\Posts;
+
+namespace GeekBrains\Blog\Commands\Comments;
+
 
 use Exception;
-use GeekBrains\Blog\Post;
+use GeekBrains\Blog\Comment;
 use GeekBrains\Blog\Repositories\Posts\PostsRepositoryInterface;
 use GeekBrains\Blog\Repositories\Users\UserNotFoundException;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
@@ -14,14 +16,10 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * Class CreatePost
- * @package GeekBrains\Blog\Commands\Posts
- */
-final class CreatePost extends Command
+final class MakeComment extends Command
 {
     /**
-     * CreatePost constructor.
+     * MakeComment constructor.
      * @param UsersRepositoryInterface $usersRepository
      * @param PostsRepositoryInterface $postsRepository
      * @param UuidFactoryInterface $uuidFactory
@@ -31,7 +29,7 @@ final class CreatePost extends Command
         private PostsRepositoryInterface $postsRepository,
         private UuidFactoryInterface $uuidFactory,
     ) {
-        parent::__construct('posts:create');
+        parent::__construct('comments:make');
     }
 
     /**
@@ -40,9 +38,9 @@ final class CreatePost extends Command
     protected function configure(): void
     {
         $this
-            ->setDescription('Creates new post')
+            ->setDescription('Makes a comment')
+            ->addArgument('uuid', InputArgument::REQUIRED, 'Post UUID')
             ->addArgument('username', InputArgument::REQUIRED, 'Username')
-            ->addArgument('title', InputArgument::REQUIRED, 'Title')
             ->addArgument('text', InputArgument::REQUIRED, 'Text');
     }
 
@@ -60,18 +58,23 @@ final class CreatePost extends Command
             return Command::FAILURE;
         }
 
+        $postUUID = new UUID($input->getArgument('uuid'));
+
+        try {
+            $post = $this->postsRepository->get($postUUID);
+        } catch (UserNotFoundException) {
+            $output->writeln("Post not found: $postUUID");
+            return Command::FAILURE;
+        }
+
         $uuid = new UUID($this->uuidFactory->uuid4()->toString());
 
-        $this->postsRepository->save(
-            new Post(
-                $uuid,
-                $user->uuid(),
-                $input->getArgument('title'),
-                $input->getArgument('text'),
-            )
+        new Comment(
+            $uuid,
+            $post->uuid(),
+            $user->uuid(),
+            $input->getArgument('text')
         );
-
-        $output->writeln("Posts created: $uuid");
 
         return Command::SUCCESS;
     }
