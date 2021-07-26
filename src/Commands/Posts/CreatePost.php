@@ -8,7 +8,6 @@ use GeekBrains\Blog\Repositories\Posts\PostsRepositoryInterface;
 use GeekBrains\Blog\Repositories\Users\UserNotFoundException;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
 use GeekBrains\Blog\UUID;
-use Ramsey\Uuid\UuidFactoryInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,12 +23,10 @@ final class CreatePost extends Command
      * CreatePost constructor.
      * @param UsersRepositoryInterface $usersRepository
      * @param PostsRepositoryInterface $postsRepository
-     * @param UuidFactoryInterface $uuidFactory
      */
     public function __construct(
         private UsersRepositoryInterface $usersRepository,
         private PostsRepositoryInterface $postsRepository,
-        private UuidFactoryInterface $uuidFactory,
     ) {
         parent::__construct('posts:create');
     }
@@ -60,7 +57,7 @@ final class CreatePost extends Command
             return Command::FAILURE;
         }
 
-        $uuid = new UUID($this->uuidFactory->uuid4()->toString());
+        $uuid = UUID::random();
 
         $this->postsRepository->save(
             new Post(

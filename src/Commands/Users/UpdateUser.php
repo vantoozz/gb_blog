@@ -5,7 +5,6 @@ namespace GeekBrains\Blog\Commands\Users;
 use Exception;
 use GeekBrains\Blog\Credentials;
 use GeekBrains\Blog\Name;
-
 use GeekBrains\Blog\Repositories\Users\UserNotFoundException;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
 use GeekBrains\Blog\User;

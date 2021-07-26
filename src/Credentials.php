@@ -41,21 +41,21 @@ final class Credentials
 
     /**
      * @param string $password
-     * @return bool
-     */
-    public function check(string $password): bool
-    {
-        return $this->hashedPassword === self::hash($password, $this->salt);
-    }
-
-    /**
-     * @param string $password
      * @param string $salt
      * @return string
      */
     private static function hash(string $password, string $salt): string
     {
         return hash('whirlpool', $password . $salt);
+    }
+
+    /**
+     * @param string $password
+     * @return bool
+     */
+    public function check(string $password): bool
+    {
+        return $this->hashedPassword === self::hash($password, $this->salt);
     }
 
     /**

@@ -10,8 +10,6 @@ use GeekBrains\Blog\Exceptions\InvalidArgumentException;
  */
 final class UUID
 {
-    private const UUID_REGEXP = '/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i';
-
     /**
      * UUID constructor.
      * @param string $uuidString
@@ -20,9 +18,17 @@ final class UUID
     public function __construct(
         private string $uuidString
     ) {
-        if (!preg_match(self::UUID_REGEXP, $this->uuidString)) {
+        if (!uuid_is_valid($uuidString)) {
             throw new InvalidArgumentException("Malformed UUID: $this->uuidString");
         }
+    }
+
+    /**
+     * @return $this
+     */
+    public static function random(): self
+    {
+        return new self(uuid_create(UUID_TYPE_RANDOM));
     }
 
     /**

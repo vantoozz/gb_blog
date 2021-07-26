@@ -5,10 +5,10 @@ namespace GeekBrains\Blog\Commands\Users;
 use Exception;
 use GeekBrains\Blog\Credentials;
 use GeekBrains\Blog\Name;
+use GeekBrains\Blog\Repositories\Users\UserNotFoundException;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
 use GeekBrains\Blog\User;
 use GeekBrains\Blog\UUID;
-use Ramsey\Uuid\UuidFactoryInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,11 +23,9 @@ final class CreateUser extends Command
     /**
      * CreateUser constructor.
      * @param UsersRepositoryInterface $usersRepository
-     * @param UuidFactoryInterface $uuidFactory
      */
     public function __construct(
         private UsersRepositoryInterface $usersRepository,
-        private UuidFactoryInterface $uuidFactory,
     ) {
         parent::__construct('users:create');
     }
@@ -59,7 +57,7 @@ final class CreateUser extends Command
 
         $this->usersRepository->save(
             new User(
-                new UUID($this->uuidFactory->uuid4()->toString()),
+                UUID::random(),
                 new Name(
                     $input->getArgument('first_name'),
                     $input->getArgument('last_name')
