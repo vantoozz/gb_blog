@@ -68,7 +68,7 @@ final class CreatePost extends Command
             )
         );
 
-        $output->writeln("Posts created: $uuid");
+        $output->writeln("Post created: $uuid");
 
         return Command::SUCCESS;
     }

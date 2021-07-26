@@ -68,10 +68,8 @@ final class MakeComment extends Command
             return Command::FAILURE;
         }
 
-        $uuid = UUID::random();
-
         new Comment(
-            $uuid,
+            UUID::random(),
             $post->uuid(),
             $user->uuid(),
             $input->getArgument('text')
