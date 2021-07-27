@@ -18,7 +18,7 @@ CREATE TABLE posts (
     uuid        VARCHAR(36)
         CONSTRAINT posts_id_pk
             PRIMARY KEY,
-    author_uuid VARCHAR(36),
+    author_uuid VARCHAR(36)  NOT NULL,
     title       VARCHAR(200) NOT NULL,
     text        TEXT         NOT NULL,
     created_at  VARCHAR(19)  NOT NULL,
@@ -27,3 +27,23 @@ CREATE TABLE posts (
 
 CREATE INDEX posts_author_uuid_index
     ON posts(author_uuid);
+
+CREATE TABLE comments (
+    uuid        VARCHAR(36)
+        CONSTRAINT comment_id_pk
+            PRIMARY KEY,
+    author_uuid VARCHAR(36) NOT NULL,
+    parent_uuid VARCHAR(36) NOT NULL,
+    text        TEXT        NOT NULL,
+    created_at  VARCHAR(19) NOT NULL,
+    updated_at  VARCHAR(19) NOT NULL
+);
+
+CREATE INDEX comments_author_uuid_index
+    ON comments(author_uuid);
+
+CREATE INDEX comments_parent_uuid_index
+    ON comments(parent_uuid);
+
+
+

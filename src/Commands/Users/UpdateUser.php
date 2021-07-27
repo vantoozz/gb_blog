@@ -89,9 +89,14 @@ final class UpdateUser extends Command
                     $lastName ?? $user->name()->last(),
                 ),
                 empty($password) ?
-                    $user->credentials() :
+                    new Credentials(
+                        $user->username(),
+                        $user->hashedPassword(),
+                        $user->passwordSalt()
+                    )
+                    :
                     Credentials::createFrom(
-                        $user->credentials()->username(),
+                        $user->username(),
                         $password
                     )
             )

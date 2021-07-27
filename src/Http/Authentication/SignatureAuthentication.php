@@ -98,6 +98,6 @@ final class SignatureAuthentication implements AuthenticationInterface
      */
     public function token(User $user): string
     {
-        return $user->credentials()->username() . self::TOKEN_DELIMITER . $this->signature($user);
+        return $user->username() . self::TOKEN_DELIMITER . $this->signature($user);
     }
 }

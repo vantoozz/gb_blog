@@ -44,7 +44,7 @@ final class Login implements ActionInterface
             return new JsonResponse(['success' => false]);
         }
 
-        if (!$user->credentials()->check($password)) {
+        if (!$user->checkPassword($password)) {
             return new JsonResponse(['success' => false]);
         }
 

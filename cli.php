@@ -1,5 +1,6 @@
 <?php declare(strict_types=1);
 
+use GeekBrains\Blog\Commands\Comments\MakeComment;
 use GeekBrains\Blog\Commands\Posts\CreatePost;
 use GeekBrains\Blog\Commands\Posts\GetPostsByAuthor;
 use GeekBrains\Blog\Commands\Users\CreateUser;
@@ -21,6 +22,7 @@ $application->addCommands(array_map(
         UpdateUser::class,
         CreatePost::class,
         GetPostsByAuthor::class,
+        MakeComment::class,
     ]
 ));
 

@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-
 namespace GeekBrains\Blog\Commands\Comments;
-
 
 use Exception;
 use GeekBrains\Blog\Comment;
+use GeekBrains\Blog\CommentId;
+use GeekBrains\Blog\Repositories\Comments\CommentsRepositoryInterface;
 use GeekBrains\Blog\Repositories\Posts\PostsRepositoryInterface;
 use GeekBrains\Blog\Repositories\Users\UserNotFoundException;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
@@ -25,10 +25,12 @@ final class MakeComment extends Command
      * MakeComment constructor.
      * @param UsersRepositoryInterface $usersRepository
      * @param PostsRepositoryInterface $postsRepository
+     * @param CommentsRepositoryInterface $commentsRepository
      */
     public function __construct(
         private UsersRepositoryInterface $usersRepository,
         private PostsRepositoryInterface $postsRepository,
+        private CommentsRepositoryInterface $commentsRepository,
     ) {
         parent::__construct('comments:make');
     }
@@ -68,11 +70,12 @@ final class MakeComment extends Command
             return Command::FAILURE;
         }
 
-        new Comment(
-            UUID::random(),
-            $post->uuid(),
-            $user->uuid(),
-            $input->getArgument('text')
+        $this->commentsRepository->save(
+            new Comment(
+                CommentId::forPost($post->uuid(), UUID::random()),
+                $user->uuid(),
+                $input->getArgument('text')
+            )
         );
 
         return Command::SUCCESS;

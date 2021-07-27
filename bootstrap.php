@@ -5,6 +5,8 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use GeekBrains\Blog\Http\Authentication\AuthenticationInterface;
 use GeekBrains\Blog\Http\Authentication\SignatureAuthentication;
+use GeekBrains\Blog\Repositories\Comments\CommentsRepositoryInterface;
+use GeekBrains\Blog\Repositories\Comments\SqliteCommentsRepository;
 use GeekBrains\Blog\Repositories\Posts\PostsRepositoryInterface;
 use GeekBrains\Blog\Repositories\Posts\SqlitePostsRepository;
 use GeekBrains\Blog\Repositories\Users\SqliteUsersRepository;
@@ -30,6 +32,11 @@ $container->set(
 $container->set(
     PostsRepositoryInterface::class,
     DI\get(SqlitePostsRepository::class)
+);
+
+$container->set(
+    CommentsRepositoryInterface::class,
+    DI\get(SqliteCommentsRepository::class)
 );
 
 $container->set(

@@ -96,9 +96,9 @@ SQL;
                     'uuid' => (string)$user->uuid(),
                     'first_name' => $user->name()->first(),
                     'last_name' => $user->name()->last(),
-                    'username' => $user->credentials()->username(),
-                    'password_hash' => $user->credentials()->hashedPassword(),
-                    'password_salt' => $user->credentials()->salt(),
+                    'username' => $user->username(),
+                    'password_hash' => $user->hashedPassword(),
+                    'password_salt' => $user->passwordSalt(),
                 ]
             );
         } catch (DbalException $e) {

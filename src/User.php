@@ -38,11 +38,36 @@ final class User
     }
 
     /**
-     * @return Credentials
+     * @param string $password
+     * @return bool
      */
-    public function credentials(): Credentials
+    public function checkPassword(string $password): bool
     {
-        return $this->credentials;
+        return $this->credentials->check($password);
+    }
+
+    /**
+     * @return string
+     */
+    public function username(): string
+    {
+        return $this->credentials->username();
+    }
+
+    /**
+     * @return string
+     */
+    public function hashedPassword(): string
+    {
+        return $this->credentials->hashedPassword();
+    }
+
+    /**
+     * @return string
+     */
+    public function passwordSalt(): string
+    {
+        return $this->credentials->salt();
     }
 
     /**

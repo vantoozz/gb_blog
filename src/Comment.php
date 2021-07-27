@@ -8,16 +8,15 @@ namespace GeekBrains\Blog;
  */
 final class Comment
 {
+
     /**
      * Comment constructor.
-     * @param UUID $uuid
-     * @param UUID $commentableUUID
+     * @param CommentId $commentId
      * @param UUID $authorUuid
      * @param string $text
      */
     public function __construct(
-        private UUID $uuid,
-        private UUID $commentableUUID,
+        private CommentId $commentId,
         private UUID $authorUuid,
         private string $text,
     ) {
@@ -28,6 +27,30 @@ final class Comment
      */
     public function uuid(): UUID
     {
-        return $this->uuid;
+        return $this->commentId->uuid();
+    }
+
+    /**
+     * @return UUID
+     */
+    public function parentUuid(): UUID
+    {
+        return $this->commentId->parentUuid();
+    }
+
+    /**
+     * @return UUID
+     */
+    public function authorUuid(): UUID
+    {
+        return $this->authorUuid;
+    }
+
+    /**
+     * @return string
+     */
+    public function text(): string
+    {
+        return $this->text;
     }
 }

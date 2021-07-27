@@ -48,6 +48,6 @@ final class NaiveAuthentication implements AuthenticationInterface
      */
     public function token(User $user): string
     {
-        return $user->credentials()->username();
+        return $user->username();
     }
 }

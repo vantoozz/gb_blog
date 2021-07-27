@@ -47,7 +47,7 @@ final class MyPosts implements ActionInterface
             static fn(Post $post) => [
                 'uuid' => (string)$post->uuid(),
                 'author' => [
-                    'username' => $user->credentials()->username(),
+                    'username' => $user->username(),
                     'name' => $user->name()->first() . ' ' . $user->name()->last(),
                 ],
                 'title' => $post->title(),
