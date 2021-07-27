@@ -5,7 +5,10 @@ namespace GeekBrains\Blog\Commands\Comments;
 use Exception;
 use GeekBrains\Blog\Comment;
 use GeekBrains\Blog\CommentId;
+use GeekBrains\Blog\Exceptions\InvalidArgumentException;
+use GeekBrains\Blog\Repositories\Comments\CommentNotFoundException;
 use GeekBrains\Blog\Repositories\Comments\CommentsRepositoryInterface;
+use GeekBrains\Blog\Repositories\Posts\PostNotFoundException;
 use GeekBrains\Blog\Repositories\Posts\PostsRepositoryInterface;
 use GeekBrains\Blog\Repositories\Users\UserNotFoundException;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
@@ -42,7 +45,7 @@ final class MakeComment extends Command
     {
         $this
             ->setDescription('Makes a comment')
-            ->addArgument('uuid', InputArgument::REQUIRED, 'Post UUID')
+            ->addArgument('uuid', InputArgument::REQUIRED, 'Commentable UUID')
             ->addArgument('username', InputArgument::REQUIRED, 'Username')
             ->addArgument('text', InputArgument::REQUIRED, 'Text');
     }
@@ -61,23 +64,60 @@ final class MakeComment extends Command
             return Command::FAILURE;
         }
 
-        $postUUID = new UUID($input->getArgument('uuid'));
-
-        try {
-            $post = $this->postsRepository->get($postUUID);
-        } catch (UserNotFoundException) {
-            $output->writeln("Post not found: $postUUID");
-            return Command::FAILURE;
-        }
-
         $this->commentsRepository->save(
             new Comment(
-                CommentId::forPost($post->uuid(), UUID::random()),
+                $this->makeCommentId(new UUID($input->getArgument('uuid'))),
                 $user->uuid(),
                 $input->getArgument('text')
             )
         );
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * @param UUID $parentUuid
+     * @return CommentId
+     * @throws InvalidArgumentException
+     */
+    private function makeCommentId(UUID $parentUuid): CommentId
+    {
+        if ($this->isPostUuid($parentUuid)) {
+            return CommentId::forPost($parentUuid, UUID::random());
+        }
+
+        if ($this->isCommentUuid($parentUuid)) {
+            return CommentId::forComment($parentUuid, UUID::random());
+        }
+
+        throw new InvalidArgumentException("Cannot find commentable: $parentUuid");
+    }
+
+    /**
+     * @param UUID $uuid
+     * @return bool
+     */
+    private function isPostUuid(UUID $uuid): bool
+    {
+        try {
+            $this->postsRepository->get($uuid);
+        } catch (PostNotFoundException) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @param UUID $uuid
+     * @return bool
+     */
+    private function isCommentUuid(UUID $uuid): bool
+    {
+        try {
+            $this->commentsRepository->get($uuid);
+        } catch (CommentNotFoundException) {
+            return false;
+        }
+        return true;
     }
 }
