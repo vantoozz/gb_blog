@@ -6,6 +6,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DbalException;
 use GeekBrains\Blog\Comment;
 use GeekBrains\Blog\CommentId;
+use GeekBrains\Blog\Exceptions\InvalidArgumentException;
 use GeekBrains\Blog\UUID;
 
 /**
@@ -26,6 +27,7 @@ final class SqliteCommentsRepository implements CommentsRepositoryInterface
 
     /**
      * @param Comment $comment
+     * @throws CommentsRepositoryException
      */
     public function save(Comment $comment): void
     {
@@ -98,16 +100,21 @@ SQL;
 
         $data = $result[0];
 
-        return new Comment(
-            $this->makeCommentId($data),
-            new UUID($data['author_uuid']),
-            $data['text']
-        );
+        try {
+            return new Comment(
+                $this->makeCommentId($data),
+                new UUID($data['author_uuid']),
+                $data['text']
+            );
+        } catch (InvalidArgumentException $e) {
+            throw new CommentsRepositoryException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
      * @param array $data
      * @return CommentId
+     * @throws InvalidArgumentException
      * @throws CommentsRepositoryException
      */
     private function makeCommentId(array $data): CommentId

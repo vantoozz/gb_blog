@@ -6,6 +6,7 @@ use GeekBrains\Blog\Http\ActionInterface;
 use GeekBrains\Blog\Http\Authentication\AuthenticationInterface;
 use GeekBrains\Blog\Http\Authentication\NotAuthenticatedException;
 use GeekBrains\Blog\Post;
+use GeekBrains\Blog\Repositories\Posts\PostsRepositoryException;
 use GeekBrains\Blog\Repositories\Posts\PostsRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,6 +32,7 @@ final class MyPosts implements ActionInterface
     /**
      * @param Request $request
      * @return JsonResponse
+     * @throws PostsRepositoryException
      */
     public function handle(Request $request): JsonResponse
     {

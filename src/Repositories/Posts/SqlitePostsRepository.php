@@ -4,6 +4,7 @@ namespace GeekBrains\Blog\Repositories\Posts;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DbalException;
+use GeekBrains\Blog\Exceptions\InvalidArgumentException;
 use GeekBrains\Blog\Post;
 use GeekBrains\Blog\UUID;
 
@@ -82,15 +83,20 @@ SQL;
             throw new PostsRepositoryException($e->getMessage(), $e->getCode(), $e);
         }
 
-        return array_map(
-            fn(array $row) => $this->makePost($row),
-            $result
-        );
+        try {
+            return array_map(
+                fn(array $row) => $this->makePost($row),
+                $result
+            );
+        } catch (InvalidArgumentException $e) {
+            throw new PostsRepositoryException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
      * @param array $data
      * @return Post
+     * @throws InvalidArgumentException
      */
     private function makePost(array $data): Post
     {
@@ -104,6 +110,7 @@ SQL;
 
     /**
      * @param UUID $uuid
+     * @throws PostsRepositoryException
      */
     public function delete(UUID $uuid): void
     {
@@ -122,6 +129,7 @@ SQL;
      * @return Post
      * @throws PostNotFoundException
      * @throws PostsRepositoryException
+     * @throws InvalidArgumentException
      */
     public function get(UUID $uuid): Post
     {

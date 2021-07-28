@@ -3,6 +3,7 @@
 namespace GeekBrains\Blog;
 
 use GeekBrains\Blog\Exceptions\InvalidArgumentException;
+use GeekBrains\Blog\Exceptions\RuntimeException;
 
 /**
  * Class CommentId
@@ -20,11 +21,12 @@ final class CommentId
      * @param UUID $uuid
      * @param UUID $parentUUID
      * @param string $parent
+     * @throws InvalidArgumentException
      */
     private function __construct(
         private UUID $uuid,
         private UUID $parentUUID,
-        private string $parent
+        string $parent
     ) {
         if (!in_array($parent, [self::COMMENT, self::POST])) {
             throw new InvalidArgumentException("Cannot create comment id for $parent");
@@ -38,7 +40,11 @@ final class CommentId
      */
     public static function forPost(UUID $postUUID, UUID $uuid): self
     {
-        return new self($uuid, $postUUID, self::POST);
+        try {
+            return new self($uuid, $postUUID, self::POST);
+        } catch (InvalidArgumentException $e) {
+            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
@@ -48,7 +54,11 @@ final class CommentId
      */
     public static function forComment(UUID $commentUUID, UUID $uuid): self
     {
-        return new self($uuid, $commentUUID, self::COMMENT);
+        try {
+            return new self($uuid, $commentUUID, self::COMMENT);
+        } catch (InvalidArgumentException $e) {
+            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     public function uuid(): UUID

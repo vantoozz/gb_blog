@@ -7,8 +7,10 @@ use GeekBrains\Blog\Comment;
 use GeekBrains\Blog\CommentId;
 use GeekBrains\Blog\Exceptions\InvalidArgumentException;
 use GeekBrains\Blog\Repositories\Comments\CommentNotFoundException;
+use GeekBrains\Blog\Repositories\Comments\CommentsRepositoryException;
 use GeekBrains\Blog\Repositories\Comments\CommentsRepositoryInterface;
 use GeekBrains\Blog\Repositories\Posts\PostNotFoundException;
+use GeekBrains\Blog\Repositories\Posts\PostsRepositoryException;
 use GeekBrains\Blog\Repositories\Posts\PostsRepositoryInterface;
 use GeekBrains\Blog\Repositories\Users\UserNotFoundException;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
@@ -78,6 +80,8 @@ final class MakeComment extends Command
     /**
      * @param UUID $parentUuid
      * @return CommentId
+     * @throws PostsRepositoryException
+     * @throws CommentsRepositoryException
      * @throws InvalidArgumentException
      */
     private function makeCommentId(UUID $parentUuid): CommentId
@@ -96,6 +100,7 @@ final class MakeComment extends Command
     /**
      * @param UUID $uuid
      * @return bool
+     * @throws PostsRepositoryException
      */
     private function isPostUuid(UUID $uuid): bool
     {
@@ -110,6 +115,7 @@ final class MakeComment extends Command
     /**
      * @param UUID $uuid
      * @return bool
+     * @throws CommentsRepositoryException
      */
     private function isCommentUuid(UUID $uuid): bool
     {

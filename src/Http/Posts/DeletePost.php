@@ -7,6 +7,7 @@ use GeekBrains\Blog\Http\ActionInterface;
 use GeekBrains\Blog\Http\Authentication\AuthenticationInterface;
 use GeekBrains\Blog\Http\Authentication\NotAuthenticatedException;
 use GeekBrains\Blog\Repositories\Posts\PostNotFoundException;
+use GeekBrains\Blog\Repositories\Posts\PostsRepositoryException;
 use GeekBrains\Blog\Repositories\Posts\PostsRepositoryInterface;
 use GeekBrains\Blog\UUID;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -33,6 +34,7 @@ final class DeletePost implements ActionInterface
     /**
      * @param Request $request
      * @return JsonResponse
+     * @throws PostsRepositoryException
      */
     public function handle(Request $request): JsonResponse
     {

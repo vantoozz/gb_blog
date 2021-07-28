@@ -4,6 +4,7 @@ namespace GeekBrains\Blog\Http;
 
 use GeekBrains\Blog\Http\Authentication\AuthenticationInterface;
 use GeekBrains\Blog\Repositories\Users\UserNotFoundException;
+use GeekBrains\Blog\Repositories\Users\UsersRepositoryException;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,6 +29,7 @@ final class Login implements ActionInterface
     /**
      * @param Request $request
      * @return JsonResponse
+     * @throws UsersRepositoryException
      */
     public function handle(Request $request): JsonResponse
     {

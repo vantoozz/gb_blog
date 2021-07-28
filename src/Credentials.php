@@ -3,6 +3,7 @@
 namespace GeekBrains\Blog;
 
 use Exception;
+use GeekBrains\Blog\Exceptions\RuntimeException;
 
 /**
  * Class Credentials
@@ -27,11 +28,15 @@ final class Credentials
      * @param string $username
      * @param string $password
      * @return static
-     * @throws Exception
      */
     public static function createFrom(string $username, string $password): self
     {
-        $salt = bin2hex(random_bytes(40));
+        try {
+            $salt = bin2hex(random_bytes(40));
+        } catch (Exception $e) {
+            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
+        }
+
         return new self(
             $username,
             self::hash($password, $salt),

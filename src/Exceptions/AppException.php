@@ -2,13 +2,13 @@
 
 namespace GeekBrains\Blog\Exceptions;
 
-use RuntimeException;
+use Exception;
 
 /**
  * Class AppException
  * @package GeekBrains\Blog\Exceptions
  */
-abstract class AppException extends RuntimeException
+abstract class AppException extends Exception
 {
 
 }

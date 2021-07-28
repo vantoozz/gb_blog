@@ -6,6 +6,7 @@ use Exception;
 use GeekBrains\Blog\Credentials;
 use GeekBrains\Blog\Name;
 use GeekBrains\Blog\Repositories\Users\UserNotFoundException;
+use GeekBrains\Blog\Repositories\Users\UsersRepositoryException;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
 use GeekBrains\Blog\User;
 use GeekBrains\Blog\UUID;
@@ -77,6 +78,7 @@ final class CreateUser extends Command
     /**
      * @param string $username
      * @return bool
+     * @throws UsersRepositoryException
      */
     private function usernameTaken(string $username): bool
     {

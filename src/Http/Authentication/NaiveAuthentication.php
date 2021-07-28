@@ -3,6 +3,7 @@
 namespace GeekBrains\Blog\Http\Authentication;
 
 use GeekBrains\Blog\Repositories\Users\UserNotFoundException;
+use GeekBrains\Blog\Repositories\Users\UsersRepositoryException;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
 use GeekBrains\Blog\User;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,6 +28,7 @@ final class NaiveAuthentication implements AuthenticationInterface
      * @param Request $request
      * @return User
      * @throws NotAuthenticatedException
+     * @throws UsersRepositoryException
      */
     public function user(Request $request): User
     {

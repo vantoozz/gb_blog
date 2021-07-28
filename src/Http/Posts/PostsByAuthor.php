@@ -4,8 +4,10 @@ namespace GeekBrains\Blog\Http\Posts;
 
 use GeekBrains\Blog\Http\ActionInterface;
 use GeekBrains\Blog\Post;
+use GeekBrains\Blog\Repositories\Posts\PostsRepositoryException;
 use GeekBrains\Blog\Repositories\Posts\PostsRepositoryInterface;
 use GeekBrains\Blog\Repositories\Users\UserNotFoundException;
+use GeekBrains\Blog\Repositories\Users\UsersRepositoryException;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,6 +33,8 @@ final class PostsByAuthor implements ActionInterface
     /**
      * @param Request $request
      * @return JsonResponse
+     * @throws UsersRepositoryException
+     * @throws PostsRepositoryException
      */
     public function handle(Request $request): JsonResponse
     {

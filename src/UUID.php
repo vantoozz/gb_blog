@@ -3,6 +3,7 @@
 namespace GeekBrains\Blog;
 
 use GeekBrains\Blog\Exceptions\InvalidArgumentException;
+use GeekBrains\Blog\Exceptions\RuntimeException;
 
 /**
  * Class UUID
@@ -28,7 +29,11 @@ final class UUID
      */
     public static function random(): self
     {
-        return new self(uuid_create(UUID_TYPE_RANDOM));
+        try {
+            return new self(uuid_create(UUID_TYPE_RANDOM));
+        } catch (InvalidArgumentException $e) {
+            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**

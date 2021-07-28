@@ -5,6 +5,7 @@ namespace GeekBrains\Blog\Repositories\Users;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DbalException;
 use GeekBrains\Blog\Credentials;
+use GeekBrains\Blog\Exceptions\InvalidArgumentException;
 use GeekBrains\Blog\Name;
 use GeekBrains\Blog\User;
 use GeekBrains\Blog\UUID;
@@ -28,6 +29,8 @@ final class SqliteUsersRepository implements UsersRepositoryInterface
     /**
      * @param string $username
      * @return User
+     * @throws UserNotFoundException
+     * @throws UsersRepositoryException
      */
     public function getByUsername(string $username): User
     {
@@ -47,11 +50,15 @@ final class SqliteUsersRepository implements UsersRepositoryInterface
 
         $data = $result[0];
 
-        return new User(
-            new UUID($data['uuid']),
-            new Name($data['first_name'], $data['last_name']),
-            new Credentials($data['username'], $data['password_hash'], $data['password_salt'])
-        );
+        try {
+            return new User(
+                new UUID($data['uuid']),
+                new Name($data['first_name'], $data['last_name']),
+                new Credentials($data['username'], $data['password_hash'], $data['password_salt'])
+            );
+        } catch (InvalidArgumentException $e) {
+            throw new UsersRepositoryException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
