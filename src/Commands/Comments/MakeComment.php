@@ -86,12 +86,8 @@ final class MakeComment extends Command
      */
     private function makeCommentId(UUID $parentUuid): CommentId
     {
-        if ($this->isPostUuid($parentUuid)) {
-            return CommentId::forPost($parentUuid, UUID::random());
-        }
-
-        if ($this->isCommentUuid($parentUuid)) {
-            return CommentId::forComment($parentUuid, UUID::random());
+        if ($this->isPostUuid($parentUuid) || $this->isCommentUuid($parentUuid)) {
+            return new CommentId($parentUuid, UUID::random());
         }
 
         throw new InvalidArgumentException("Cannot find commentable: $parentUuid");

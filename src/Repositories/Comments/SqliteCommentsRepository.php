@@ -100,9 +100,19 @@ SQL;
 
         $data = $result[0];
 
+        return $this->makeComment($data);
+    }
+
+    /**
+     * @param mixed $data
+     * @return Comment
+     * @throws CommentsRepositoryException
+     */
+    private function makeComment(mixed $data): Comment
+    {
         try {
             return new Comment(
-                $this->makeCommentId($data),
+                new CommentId(new UUID($data['parent_uuid']), new UUID($data['uuid'])),
                 new UUID($data['author_uuid']),
                 $data['text']
             );
@@ -112,20 +122,48 @@ SQL;
     }
 
     /**
-     * @param array $data
-     * @return CommentId
-     * @throws InvalidArgumentException
+     * @param UUID $uuid
+     * @return array
      * @throws CommentsRepositoryException
      */
-    private function makeCommentId(array $data): CommentId
+    public function getChildren(UUID $uuid): array
     {
-        if (!empty($data['parent_post_uuid'])) {
-            return CommentId::forPost(new UUID($data['parent_post_uuid']), new UUID($data['uuid']));
-        }
-        if (!empty($data['parent_comment_uuid'])) {
-            return CommentId::forComment(new UUID($data['parent_comment_uuid']), new UUID($data['uuid']));
+        $query = <<< 'SQL'
+            WITH RECURSIVE comments_tree(
+                             uuid,
+                             parent_uuid,
+                             author_uuid,
+                             text
+                )
+                AS (
+                    SELECT uuid,
+                        parent_uuid,
+                        author_uuid,
+                        text
+                    FROM comments
+                    WHERE parent_uuid = :uuid
+                    UNION
+                    SELECT c.uuid, c.parent_uuid, c.author_uuid, c.text
+                    FROM comments c, comments_tree t
+                    WHERE c.parent_uuid = t.uuid
+                )
+            SELECT *
+            FROM comments_tree
+SQL;
+
+        try {
+            /** @var array $result */
+            $result = $this->connection->executeQuery(
+                $query,
+                ['uuid' => (string)$uuid]
+            )->fetchAllAssociative();
+        } catch (DbalException $e) {
+            throw new CommentsRepositoryException($e->getMessage(), $e->getCode(), $e);
         }
 
-        throw new CommentsRepositoryException("Cannot find a parent for comment ${data['uuid']}");
+        return array_map(
+            fn(array $row) => $this->makeComment($row),
+            $result
+        );
     }
 }

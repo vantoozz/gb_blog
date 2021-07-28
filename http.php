@@ -4,6 +4,7 @@ use GeekBrains\Blog\Http\ActionInterface;
 use GeekBrains\Blog\Http\Login;
 use GeekBrains\Blog\Http\Posts\DeletePost;
 use GeekBrains\Blog\Http\Posts\MyPosts;
+use GeekBrains\Blog\Http\Posts\PostComments;
 use GeekBrains\Blog\Http\Posts\PostsByAuthor;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,6 +26,7 @@ $routes = [
     '/posts/author' => PostsByAuthor::class,
     '/posts/my' => MyPosts::class,
     '/posts/delete' => DeletePost::class,
+    '/comments' => PostComments::class,
 ];
 
 if (!array_key_exists($uri, $routes)) {

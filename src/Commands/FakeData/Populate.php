@@ -68,7 +68,7 @@ final class Populate extends Command
         $posts = array_map(fn() => $this->makePost($users[array_rand($users)]->uuid()), range(1, 100));
 
         foreach ($posts as $post) {
-            $this->makePostComments($post->uuid(), $users);
+            $this->makeComments($post->uuid(), $users, 0);
         }
 
         return Command::SUCCESS;
@@ -113,24 +113,25 @@ final class Populate extends Command
     }
 
     /**
-     * @param UUID $postUuid
-     * @param User[] $users
+     * @param UUID $parentUuid
+     * @param array $users
+     * @param int $level
      * @throws CommentsRepositoryException
      */
-    private function makePostComments(UUID $postUuid, array $users): void
+    private function makeComments(UUID $parentUuid, array $users, int $level): void
     {
-        for ($i = 0; $i < $this->randomNumber(50); $i++) {
+        for ($i = 0; $i < $this->randomNumber(7 - $level); $i++) {
             $commentUuid = UUID::random();
 
             $comment = new Comment(
-                CommentId::forPost($postUuid, $commentUuid),
+                new CommentId($parentUuid, $commentUuid),
                 $users[array_rand($users)]->uuid(),
                 $this->faker->sentence
             );
 
             $this->commentsRepository->save($comment);
 
-            $this->makeComments($commentUuid, $users, 0);
+            $this->makeComments($commentUuid, $users, ++$level);
         }
     }
 
@@ -144,29 +145,6 @@ final class Populate extends Command
             return random_int(0, $max);
         } catch (Exception $e) {
             throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
-        }
-    }
-
-    /**
-     * @param UUID $parentUuid
-     * @param array $users
-     * @param int $level
-     * @throws CommentsRepositoryException
-     */
-    private function makeComments(UUID $parentUuid, array $users, int $level): void
-    {
-        for ($i = 0; $i < $this->randomNumber(7 - $level); $i++) {
-            $commentUuid = UUID::random();
-
-            $comment = new Comment(
-                CommentId::forComment($parentUuid, $commentUuid),
-                $users[array_rand($users)]->uuid(),
-                $this->faker->sentence
-            );
-
-            $this->commentsRepository->save($comment);
-
-            $this->makeComments($commentUuid, $users, ++$level);
         }
     }
 }

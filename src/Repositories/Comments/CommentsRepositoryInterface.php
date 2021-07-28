@@ -17,7 +17,6 @@ interface CommentsRepositoryInterface
      */
     public function save(Comment $comment): void;
 
-
     /**
      * @param UUID $uuid
      * @return Comment
@@ -25,4 +24,11 @@ interface CommentsRepositoryInterface
      * @throws CommentsRepositoryException
      */
     public function get(UUID $uuid): Comment;
+
+    /**
+     * @param UUID $uuid
+     * @return Comment[]
+     * @throws CommentsRepositoryException
+     */
+    public function getChildren(UUID $uuid): array;
 }
