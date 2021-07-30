@@ -67,15 +67,50 @@ final class PostComments implements ActionInterface
             ]);
         }
 
-
-        return new JsonResponse(array_map(
+        $heap = array_map(
             static fn(Comment $comment) => [
                 'uuid' => (string)$comment->uuid(),
-                'parent_id' => (string)$comment->parentUuid(),
-                'author_uuid' => (string)$comment->authorUuid(),
+                'parent' => (string)$comment->parentUuid(),
+                'author' => (string)$comment->authorUuid(),
                 'text' => $comment->text(),
             ],
             $this->commentsRepository->getChildren($post->uuid())
-        ));
+        );
+
+
+        return new JsonResponse($this->tree($heap, (string)$post->uuid()));
+    }
+
+    /**
+     * @param array $flattenComments
+     * @param string $baseUuid
+     * @return array
+     */
+    private function tree(array $flattenComments, string $baseUuid): array
+    {
+        $tree = [];
+
+        $remainingComments = [];
+
+        foreach ($flattenComments as $comment) {
+            if ($baseUuid === $comment['parent']) {
+                $tree[] = [
+                    'uuid' => $comment['uuid'],
+                    'author' => $comment['author'],
+                    'text' => $comment['text'],
+                ];
+                continue;
+            }
+            $remainingComments[] = $comment;
+        }
+
+        foreach ($tree as &$comment) {
+            $children = $this->tree($remainingComments, $comment['uuid']);
+            if (!empty($children)) {
+                $comment['comments'] = $children;
+            }
+        }
+
+        return $tree;
     }
 }

@@ -129,26 +129,17 @@ SQL;
     public function getChildren(UUID $uuid): array
     {
         $query = <<< 'SQL'
-            WITH RECURSIVE comments_tree(
-                             uuid,
-                             parent_uuid,
-                             author_uuid,
-                             text
-                )
+            WITH RECURSIVE comments_tree(uuid, parent_uuid, author_uuid, text)
                 AS (
-                    SELECT uuid,
-                        parent_uuid,
-                        author_uuid,
-                        text
+                    SELECT uuid,parent_uuid, author_uuid, text
                     FROM comments
                     WHERE parent_uuid = :uuid
                     UNION
                     SELECT c.uuid, c.parent_uuid, c.author_uuid, c.text
-                    FROM comments c, comments_tree t
-                    WHERE c.parent_uuid = t.uuid
+                    FROM comments c 
+                        JOIN comments_tree t ON c.parent_uuid = t.uuid
                 )
-            SELECT *
-            FROM comments_tree
+            SELECT * FROM comments_tree
 SQL;
 
         try {
