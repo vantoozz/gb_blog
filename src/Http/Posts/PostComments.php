@@ -67,7 +67,7 @@ final class PostComments implements ActionInterface
             ]);
         }
 
-        $heap = array_map(
+        $comments = array_map(
             static fn(Comment $comment) => [
                 'uuid' => (string)$comment->uuid(),
                 'parent' => (string)$comment->parentUuid(),
@@ -78,39 +78,38 @@ final class PostComments implements ActionInterface
         );
 
 
-        return new JsonResponse($this->tree($heap, (string)$post->uuid()));
+        return new JsonResponse($this->tree($comments, (string)$post->uuid()));
     }
 
     /**
-     * @param array $flattenComments
-     * @param string $baseUuid
+     * @param array $heap
+     * @param string $parent
      * @return array
      */
-    private function tree(array $flattenComments, string $baseUuid): array
+    private function tree(array $heap, string $parent): array
     {
-        $tree = [];
+        $branch = [];
+        $leftovers = [];
 
-        $remainingComments = [];
-
-        foreach ($flattenComments as $comment) {
-            if ($baseUuid === $comment['parent']) {
-                $tree[] = [
+        foreach ($heap as $comment) {
+            if ($parent === $comment['parent']) {
+                $branch[] = [
                     'uuid' => $comment['uuid'],
                     'author' => $comment['author'],
                     'text' => $comment['text'],
                 ];
                 continue;
             }
-            $remainingComments[] = $comment;
+            $leftovers[] = $comment;
         }
 
-        foreach ($tree as &$comment) {
-            $children = $this->tree($remainingComments, $comment['uuid']);
-            if (!empty($children)) {
-                $comment['comments'] = $children;
+        foreach ($branch as &$comment) {
+            $leaves = $this->tree($leftovers, $comment['uuid']);
+            if (!empty($leaves)) {
+                $comment['comments'] = $leaves;
             }
         }
 
-        return $tree;
+        return $branch;
     }
 }
