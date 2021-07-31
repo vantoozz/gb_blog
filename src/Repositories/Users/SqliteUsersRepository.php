@@ -9,6 +9,7 @@ use GeekBrains\Blog\Exceptions\InvalidArgumentException;
 use GeekBrains\Blog\Name;
 use GeekBrains\Blog\User;
 use GeekBrains\Blog\UUID;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class SqliteUsersRepository
@@ -20,9 +21,11 @@ final class SqliteUsersRepository implements UsersRepositoryInterface
     /**
      * SqliteUsersRepository constructor.
      * @param Connection $connection
+     * @param LoggerInterface $logger
      */
     public function __construct(
-        private Connection $connection
+        private Connection $connection,
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -34,6 +37,7 @@ final class SqliteUsersRepository implements UsersRepositoryInterface
      */
     public function getByUsername(string $username): User
     {
+        $this->logger->info("Searching user: $username");
         try {
             /** @var array $result */
             $result = $this->connection->executeQuery(

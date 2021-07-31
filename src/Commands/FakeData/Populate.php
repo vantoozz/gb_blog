@@ -52,7 +52,6 @@ final class Populate extends Command
         $this->setDescription('Populates repositories with fake data');
     }
 
-
     /**
      * @param InputInterface $input
      * @param OutputInterface $output

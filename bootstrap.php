@@ -15,6 +15,11 @@ use GeekBrains\Blog\Repositories\Posts\PostsRepositoryInterface;
 use GeekBrains\Blog\Repositories\Posts\SqlitePostsRepository;
 use GeekBrains\Blog\Repositories\Users\SqliteUsersRepository;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
+use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\RotatingFileHandler;
+use Monolog\Logger;
+use Monolog\Processor\WebProcessor;
+use Psr\Log\LoggerInterface;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
@@ -50,7 +55,6 @@ $container->set(
     DI\get(SignatureAuthentication::class)
 );
 
-
 $container->set(
     \Faker\Generator::class,
     DI\factory(function () {
@@ -66,14 +70,32 @@ $container->set(
     })
 );
 
+$container->set(
+    LoggerInterface::class,
+    DI\factory(function () {
+        $appName = 'blog';
+
+        $logger = new Logger($appName);
+
+        $logger->pushProcessor(new WebProcessor());
+
+        $formatter = new LineFormatter();
+
+        $maxFiles = 2;
+        $logsPath = __DIR__ . '/logs/';
+
+        $logger->pushHandler(
+            (new RotatingFileHandler($logsPath . $appName . '.log', $maxFiles, Logger::DEBUG, false))
+                ->setFormatter($formatter)
+        );
+
+        $logger->pushHandler(
+            (new RotatingFileHandler($logsPath . $appName . '.error.log', $maxFiles, Logger::ERROR, false))
+                ->setFormatter($formatter)
+        );
+
+        return $logger;
+    })
+);
+
 return $container;
-
-
-
-
-
-
-
-
-
-

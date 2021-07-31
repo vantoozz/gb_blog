@@ -1,5 +1,6 @@
 <?php declare(strict_types=1);
 
+use GeekBrains\Blog\Exceptions\AppException;
 use GeekBrains\Blog\Http\ActionInterface;
 use GeekBrains\Blog\Http\Login;
 use GeekBrains\Blog\Http\Posts\DeletePost;
@@ -7,6 +8,8 @@ use GeekBrains\Blog\Http\Posts\MyPosts;
 use GeekBrains\Blog\Http\Posts\PostComments;
 use GeekBrains\Blog\Http\Posts\PostsByAuthor;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -30,6 +33,7 @@ $routes = [
 ];
 
 if (!array_key_exists($uri, $routes)) {
+    $container->get(LoggerInterface::class)->warning("Not found: $uri");
     (new Response(status: Response::HTTP_NOT_FOUND))->send();
     return;
 }
@@ -37,4 +41,9 @@ if (!array_key_exists($uri, $routes)) {
 /** @var ActionInterface $action */
 $action = $container->get($routes[$uri]);
 
-$action->handle($request)->send();
+try {
+    $action->handle($request)->send();
+} catch (AppException $e) {
+    $container->get(LoggerInterface::class)->error($e->getMessage(), ['exception' => $e]);
+    (new JsonResponse(['success' => false], Response::HTTP_INTERNAL_SERVER_ERROR))->send();
+}

@@ -77,7 +77,6 @@ final class PostComments implements ActionInterface
             $this->commentsRepository->getChildren($post->uuid())
         );
 
-
         return new JsonResponse($this->tree($comments, (string)$post->uuid()));
     }
 
