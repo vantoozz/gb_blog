@@ -39,19 +39,20 @@ final class Credentials
 
         return new self(
             $username,
-            self::hash($password, $salt),
+            self::hash($username, $password, $salt),
             $salt
         );
     }
 
     /**
+     * @param string $username
      * @param string $password
      * @param string $salt
      * @return string
      */
-    private static function hash(string $password, string $salt): string
+    private static function hash(string $username, string $password, string $salt): string
     {
-        return hash('whirlpool', $password . $salt);
+        return hash('whirlpool', $username . $password . $salt);
     }
 
     /**
@@ -60,7 +61,7 @@ final class Credentials
      */
     public function check(string $password): bool
     {
-        return $this->hashedPassword === self::hash($password, $this->salt);
+        return $this->hashedPassword === self::hash($this->username, $password, $this->salt);
     }
 
     /**
