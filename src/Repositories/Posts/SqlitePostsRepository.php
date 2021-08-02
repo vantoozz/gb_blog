@@ -2,11 +2,11 @@
 
 namespace GeekBrains\Blog\Repositories\Posts;
 
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Exception as DbalException;
 use GeekBrains\Blog\Exceptions\InvalidArgumentException;
 use GeekBrains\Blog\Post;
 use GeekBrains\Blog\UUID;
+use PDO;
+use PDOException;
 
 /**
  * Class SqlitePostsRepository
@@ -16,10 +16,10 @@ final class SqlitePostsRepository implements PostsRepositoryInterface
 {
     /**
      * SqlitePostsRepository constructor.
-     * @param Connection $connection
+     * @param PDO $pdo
      */
     public function __construct(
-        private Connection $connection
+        private PDO $pdo
     ) {
     }
 
@@ -52,17 +52,15 @@ final class SqlitePostsRepository implements PostsRepositoryInterface
                 updated_at = datetime('now')
 SQL;
         try {
-            $this->connection->executeQuery(
-                $query,
-                [
-                    'uuid' => (string)$post->uuid(),
-                    'author_uuid' => $post->authorUuid(),
-                    'title' => $post->title(),
-                    'text' => $post->text(),
-                ]
-            );
-        } catch (DbalException $e) {
-            throw new PostsRepositoryException($e->getMessage(), $e->getCode(), $e);
+            $statement = $this->pdo->prepare($query);
+            $statement->execute([
+                ':uuid' => (string)$post->uuid(),
+                ':author_uuid' => $post->authorUuid(),
+                ':title' => $post->title(),
+                ':text' => $post->text(),
+            ]);
+        } catch (PDOException $e) {
+            throw new PostsRepositoryException($e->getMessage(), (int)$e->getCode(), $e);
         }
     }
 
@@ -74,13 +72,12 @@ SQL;
     public function getByAuthor(UUID $authorUuid): array
     {
         try {
-            /** @var array $result */
-            $result = $this->connection->executeQuery(
-                'SELECT * FROM posts WHERE author_uuid = :author_uuid',
-                ['author_uuid' => (string)$authorUuid]
-            )->fetchAllAssociative();
-        } catch (DbalException $e) {
-            throw new PostsRepositoryException($e->getMessage(), $e->getCode(), $e);
+            $statement = $this->pdo->prepare('SELECT * FROM posts WHERE author_uuid = ?');
+            $statement->execute([(string)$authorUuid]);
+            /** @var array|false $result */
+            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new PostsRepositoryException($e->getMessage(), (int)$e->getCode(), $e);
         }
 
         try {
@@ -115,12 +112,10 @@ SQL;
     public function delete(UUID $uuid): void
     {
         try {
-            $this->connection->executeStatement(
-                'DELETE FROM posts WHERE uuid = :uuid',
-                ['uuid' => (string)$uuid]
-            );
-        } catch (DbalException $e) {
-            throw new PostsRepositoryException($e->getMessage(), $e->getCode(), $e);
+            $statement = $this->pdo->prepare('DELETE FROM posts WHERE uuid = ?');
+            $statement->execute([(string)$uuid]);
+        } catch (PDOException $e) {
+            throw new PostsRepositoryException($e->getMessage(), (int)$e->getCode(), $e);
         }
     }
 
@@ -129,24 +124,26 @@ SQL;
      * @return Post
      * @throws PostNotFoundException
      * @throws PostsRepositoryException
-     * @throws InvalidArgumentException
      */
     public function get(UUID $uuid): Post
     {
         try {
-            /** @var array $result */
-            $result = $this->connection->executeQuery(
-                'SELECT * FROM posts WHERE uuid = :uuid',
-                ['uuid' => $uuid]
-            )->fetchAllAssociative();
-        } catch (DbalException $e) {
-            throw new PostsRepositoryException($e->getMessage(), $e->getCode(), $e);
+            $statement = $this->pdo->prepare('SELECT * FROM posts WHERE uuid = ?');
+            $statement->execute([(string)$uuid]);
+            /** @var array|false $result */
+            $result = $statement->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new PostsRepositoryException($e->getMessage(), (int)$e->getCode(), $e);
         }
 
-        if (count($result) !== 1) {
+        if (false === $result) {
             throw new PostNotFoundException("Cannot find post by uuid: $uuid");
         }
 
-        return $this->makePost($result[0]);
+        try {
+            return $this->makePost($result);
+        } catch (InvalidArgumentException $e) {
+            throw new PostsRepositoryException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 }

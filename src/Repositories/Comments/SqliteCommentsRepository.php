@@ -2,11 +2,11 @@
 
 namespace GeekBrains\Blog\Repositories\Comments;
 
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Exception as DbalException;
 use GeekBrains\Blog\Comment;
 use GeekBrains\Blog\Exceptions\InvalidArgumentException;
 use GeekBrains\Blog\UUID;
+use PDO;
+use PDOException;
 
 /**
  * Class SqliteCommentsRepository
@@ -17,10 +17,10 @@ final class SqliteCommentsRepository implements CommentsRepositoryInterface
 
     /**
      * SqliteCommentsRepositoryInterface constructor.
-     * @param Connection $connection
+     * @param PDO $pdo
      */
     public function __construct(
-        private Connection $connection
+        private PDO $pdo
     ) {
     }
 
@@ -54,46 +54,30 @@ final class SqliteCommentsRepository implements CommentsRepositoryInterface
 SQL;
 
         try {
-            $this->connection->executeQuery(
-                $query,
-                [
-                    'uuid' => (string)$comment->uuid(),
-                    'author_uuid' => (string)$comment->authorUuid(),
-                    'parent_uuid' => (string)$comment->parentUuid(),
-                    'text' => $comment->text(),
-                ]
-            );
-        } catch (DbalException $e) {
-            throw new CommentsRepositoryException($e->getMessage(), $e->getCode(), $e);
+            $statement = $this->pdo->prepare($query);
+            $statement->execute([
+                ':uuid' => (string)$comment->uuid(),
+                ':author_uuid' => (string)$comment->authorUuid(),
+                ':parent_uuid' => (string)$comment->parentUuid(),
+                ':text' => $comment->text(),
+            ]);
+        } catch (PDOException $e) {
+            throw new CommentsRepositoryException($e->getMessage(), (int)$e->getCode(), $e);
         }
     }
 
     public function get(UUID $uuid): Comment
     {
-        $query = <<<'SQL'
-            SELECT 
-                   c.uuid, 
-                   c.author_uuid,
-                   c.parent_uuid, 
-                   c.text, 
-                   p.uuid parent_post_uuid, 
-                   c2.uuid parent_comment_uuid
-            FROM comments c 
-                LEFT JOIN posts p ON c.parent_uuid = p.uuid
-                LEFT JOIN comments c2 ON c.parent_uuid = c2.uuid
-                WHERE c.uuid = :uuid
-SQL;
-
         try {
-            /** @var array $result */
-            $result = $this->connection
-                ->executeQuery($query, ['uuid' => $uuid])
-                ->fetchAllAssociative();
-        } catch (DbalException $e) {
-            throw new CommentsRepositoryException($e->getMessage(), $e->getCode(), $e);
+            $statement = $this->pdo->prepare('SELECT * FROM comments WHERE uuid = ?');
+            $statement->execute([(string)$uuid]);
+            /** @var array|false $result */
+            $result = $statement->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new CommentsRepositoryException($e->getMessage(), (int)$e->getCode(), $e);
         }
 
-        if (count($result) !== 1) {
+        if (false === $result) {
             throw new CommentNotFoundException("Cannot find comment by uuid: $uuid");
         }
 
@@ -133,7 +117,7 @@ SQL;
                 AS (
                     SELECT uuid, parent_uuid, author_uuid, text
                     FROM comments
-                    WHERE parent_uuid = :uuid
+                    WHERE parent_uuid = ?
                     UNION
                     SELECT c.uuid, c.parent_uuid, c.author_uuid, c.text
                     FROM comments c 
@@ -143,13 +127,12 @@ SQL;
 SQL;
 
         try {
-            /** @var array $result */
-            $result = $this->connection->executeQuery(
-                $query,
-                ['uuid' => (string)$uuid]
-            )->fetchAllAssociative();
-        } catch (DbalException $e) {
-            throw new CommentsRepositoryException($e->getMessage(), $e->getCode(), $e);
+            $statement = $this->pdo->prepare($query);
+            $statement->execute([(string)$uuid]);
+            /** @var array|false $result */
+            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new CommentsRepositoryException($e->getMessage(), (int)$e->getCode(), $e);
         }
 
         return array_map(

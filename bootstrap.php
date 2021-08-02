@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 use DI\ContainerBuilder;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DriverManager;
 use Faker\Provider\Lorem;
 use Faker\Provider\ru_RU\Internet;
 use Faker\Provider\ru_RU\Person;
@@ -29,10 +27,8 @@ $builder->useAnnotations(false);
 $container = $builder->build();
 
 $container->set(
-    Connection::class,
-    DI\factory(fn() => DriverManager::getConnection([
-        'url' => 'sqlite:///blog.sqlite',
-    ]))
+    PDO::class,
+    DI\factory(fn() => new PDO('sqlite:' . __DIR__ . '/blog.sqlite'))
 );
 
 $container->set(
