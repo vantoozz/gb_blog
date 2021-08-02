@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace GeekBrains\Blog\Http;
+namespace GeekBrains\Blog\Http\Actions;
 
 use GeekBrains\Blog\Http\Authentication\AuthenticationInterface;
 use GeekBrains\Blog\Repositories\Users\UserNotFoundException;
@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class Login
- * @package GeekBrains\Blog\Http
+ * @package GeekBrains\Blog\Http\Actions
  */
 final class Login implements ActionInterface
 {

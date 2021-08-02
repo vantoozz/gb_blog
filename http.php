@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
 use GeekBrains\Blog\Exceptions\AppException;
-use GeekBrains\Blog\Http\ActionInterface;
-use GeekBrains\Blog\Http\Login;
-use GeekBrains\Blog\Http\Posts\DeletePost;
-use GeekBrains\Blog\Http\Posts\MyPosts;
-use GeekBrains\Blog\Http\Posts\PostComments;
-use GeekBrains\Blog\Http\Posts\PostsByAuthor;
+use GeekBrains\Blog\Http\Actions\ActionInterface;
+use GeekBrains\Blog\Http\Actions\Login;
+use GeekBrains\Blog\Http\Actions\Posts\DeletePost;
+use GeekBrains\Blog\Http\Actions\Posts\MyPosts;
+use GeekBrains\Blog\Http\Actions\Posts\PostComments;
+use GeekBrains\Blog\Http\Actions\Posts\PostsByAuthor;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -34,7 +34,7 @@ $routes = [
 
 if (!array_key_exists($uri, $routes)) {
     $container->get(LoggerInterface::class)->warning("Not found: $uri");
-    (new Response(status: Response::HTTP_NOT_FOUND))->send();
+    (new JsonResponse(status: Response::HTTP_NOT_FOUND))->send();
     return;
 }
 

@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace GeekBrains\Blog\Http\Posts;
+namespace GeekBrains\Blog\Http\Actions\Posts;
 
-use GeekBrains\Blog\Http\ActionInterface;
+use GeekBrains\Blog\Http\Actions\ActionInterface;
 use GeekBrains\Blog\Post;
 use GeekBrains\Blog\Repositories\Posts\PostsRepositoryException;
 use GeekBrains\Blog\Repositories\Posts\PostsRepositoryInterface;
@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class PostsByAuthor
- * @package GeekBrains\Blog\Http
+ * @package GeekBrains\Blog\Actions\Http
  */
 final class PostsByAuthor implements ActionInterface
 {

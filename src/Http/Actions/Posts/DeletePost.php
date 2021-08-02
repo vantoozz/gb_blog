@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace GeekBrains\Blog\Http\Posts;
+namespace GeekBrains\Blog\Http\Actions\Posts;
 
 use GeekBrains\Blog\Exceptions\InvalidArgumentException;
-use GeekBrains\Blog\Http\ActionInterface;
+use GeekBrains\Blog\Http\Actions\ActionInterface;
 use GeekBrains\Blog\Http\Authentication\AuthenticationInterface;
 use GeekBrains\Blog\Http\Authentication\NotAuthenticatedException;
 use GeekBrains\Blog\Repositories\Posts\PostNotFoundException;
@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class DeletePost
- * @package GeekBrains\Blog\Http\Posts
+ * @package GeekBrains\Blog\Http\Actions\Posts
  */
 final class DeletePost implements ActionInterface
 {
