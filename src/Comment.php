@@ -10,13 +10,14 @@ final class Comment
 {
 
     /**
-     * Comment constructor.
-     * @param CommentId $commentId
+     * @param UUID $uuid
+     * @param UUID $parentUUID
      * @param UUID $authorUuid
      * @param string $text
      */
     public function __construct(
-        private CommentId $commentId,
+        private UUID $uuid,
+        private UUID $parentUUID,
         private UUID $authorUuid,
         private string $text,
     ) {
@@ -27,7 +28,7 @@ final class Comment
      */
     public function uuid(): UUID
     {
-        return $this->commentId->uuid();
+        return $this->uuid;
     }
 
     /**
@@ -35,7 +36,7 @@ final class Comment
      */
     public function parentUuid(): UUID
     {
-        return $this->commentId->parentUuid();
+        return $this->parentUUID;
     }
 
     /**

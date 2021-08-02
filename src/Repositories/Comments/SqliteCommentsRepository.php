@@ -5,7 +5,6 @@ namespace GeekBrains\Blog\Repositories\Comments;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DbalException;
 use GeekBrains\Blog\Comment;
-use GeekBrains\Blog\CommentId;
 use GeekBrains\Blog\Exceptions\InvalidArgumentException;
 use GeekBrains\Blog\UUID;
 
@@ -104,15 +103,16 @@ SQL;
     }
 
     /**
-     * @param mixed $data
+     * @param array $data
      * @return Comment
      * @throws CommentsRepositoryException
      */
-    private function makeComment(mixed $data): Comment
+    private function makeComment(array $data): Comment
     {
         try {
             return new Comment(
-                new CommentId(new UUID($data['parent_uuid']), new UUID($data['uuid'])),
+                new UUID($data['uuid']),
+                new UUID($data['parent_uuid']),
                 new UUID($data['author_uuid']),
                 $data['text']
             );

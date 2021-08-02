@@ -4,7 +4,6 @@ namespace GeekBrains\Blog\Commands\Comments;
 
 use Exception;
 use GeekBrains\Blog\Comment;
-use GeekBrains\Blog\CommentId;
 use GeekBrains\Blog\Exceptions\InvalidArgumentException;
 use GeekBrains\Blog\Repositories\Comments\CommentNotFoundException;
 use GeekBrains\Blog\Repositories\Comments\CommentsRepositoryException;
@@ -66,31 +65,22 @@ final class MakeComment extends Command
             return Command::FAILURE;
         }
 
+        $parentUuid = new UUID($input->getArgument('uuid'));
+
+        if ($this->isPostUuid($parentUuid) || $this->isCommentUuid($parentUuid)) {
+            throw new InvalidArgumentException("Commentable not found: $parentUuid");
+        }
+
         $this->commentsRepository->save(
             new Comment(
-                $this->makeCommentId(new UUID($input->getArgument('uuid'))),
+                UUID::random(),
+                $parentUuid,
                 $user->uuid(),
                 $input->getArgument('text')
             )
         );
 
         return Command::SUCCESS;
-    }
-
-    /**
-     * @param UUID $parentUuid
-     * @return CommentId
-     * @throws PostsRepositoryException
-     * @throws CommentsRepositoryException
-     * @throws InvalidArgumentException
-     */
-    private function makeCommentId(UUID $parentUuid): CommentId
-    {
-        if ($this->isPostUuid($parentUuid) || $this->isCommentUuid($parentUuid)) {
-            return new CommentId($parentUuid, UUID::random());
-        }
-
-        throw new InvalidArgumentException("Cannot find commentable: $parentUuid");
     }
 
     /**

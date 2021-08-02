@@ -5,7 +5,6 @@ namespace GeekBrains\Blog\Commands\FakeData;
 use Exception;
 use Faker\Generator;
 use GeekBrains\Blog\Comment;
-use GeekBrains\Blog\CommentId;
 use GeekBrains\Blog\Credentials;
 use GeekBrains\Blog\Exceptions\RuntimeException;
 use GeekBrains\Blog\Name;
@@ -123,7 +122,8 @@ final class Populate extends Command
             $commentUuid = UUID::random();
 
             $comment = new Comment(
-                new CommentId($parentUuid, $commentUuid),
+                $commentUuid,
+                $parentUuid,
                 $users[array_rand($users)]->uuid(),
                 $this->faker->sentence
             );
