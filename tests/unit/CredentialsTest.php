@@ -42,7 +42,6 @@ final class CredentialsTest extends TestCase
         $this->assertTrue($credentials->check('some_password'));
     }
 
-
     /**
      * @test
      */
