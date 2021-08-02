@@ -131,7 +131,7 @@ SQL;
         $query = <<< 'SQL'
             WITH RECURSIVE comments_tree(uuid, parent_uuid, author_uuid, text)
                 AS (
-                    SELECT uuid,parent_uuid, author_uuid, text
+                    SELECT uuid, parent_uuid, author_uuid, text
                     FROM comments
                     WHERE parent_uuid = :uuid
                     UNION
