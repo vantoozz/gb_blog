@@ -6,7 +6,8 @@ use GeekBrains\Blog\Credentials;
 use PHPUnit\Framework\TestCase;
 
 /**
- *
+ * Class CredentialsTest
+ * @package GeekBrains\Blog\UnitTests
  */
 final class CredentialsTest extends TestCase
 {

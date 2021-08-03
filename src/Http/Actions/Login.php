@@ -3,11 +3,14 @@
 namespace GeekBrains\Blog\Http\Actions;
 
 use GeekBrains\Blog\Http\Authentication\AuthenticationInterface;
+use GeekBrains\Blog\Http\ErrorResponse;
+use GeekBrains\Blog\Http\HttpException;
+use GeekBrains\Blog\Http\Request;
+use GeekBrains\Blog\Http\Response;
+use GeekBrains\Blog\Http\SuccessfulResponse;
 use GeekBrains\Blog\Repositories\Users\UserNotFoundException;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryException;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class Login
@@ -28,30 +31,29 @@ final class Login implements ActionInterface
 
     /**
      * @param Request $request
-     * @return JsonResponse
+     * @return Response
      * @throws UsersRepositoryException
      */
-    public function handle(Request $request): JsonResponse
+    public function handle(Request $request): Response
     {
-        $username = $request->get('username');
-        $password = $request->get('password');
-
-        if (empty($username) || empty($password)) {
-            return new JsonResponse(['success' => false]);
+        try {
+            $username = $request->query('username');
+            $password = $request->query('password');
+        } catch (HttpException) {
+            return new ErrorResponse('No credentials');
         }
 
         try {
             $user = $this->usersRepository->getByUsername($username);
         } catch (UserNotFoundException) {
-            return new JsonResponse(['success' => false]);
+            return new ErrorResponse('User not found or password is incorrect');
         }
 
         if (!$user->checkPassword($password)) {
-            return new JsonResponse(['success' => false]);
+            return new ErrorResponse('User not found or password is incorrect');
         }
 
-        return new JsonResponse([
-            'success' => true,
+        return new SuccessfulResponse([
             'token' => $this->authentication->token($user),
         ]);
     }

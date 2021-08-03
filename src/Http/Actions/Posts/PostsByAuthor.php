@@ -3,14 +3,16 @@
 namespace GeekBrains\Blog\Http\Actions\Posts;
 
 use GeekBrains\Blog\Http\Actions\ActionInterface;
+use GeekBrains\Blog\Http\HttpException;
+use GeekBrains\Blog\Http\Request;
+use GeekBrains\Blog\Http\Response;
+use GeekBrains\Blog\Http\SuccessfulResponse;
 use GeekBrains\Blog\Post;
 use GeekBrains\Blog\Repositories\Posts\PostsRepositoryException;
 use GeekBrains\Blog\Repositories\Posts\PostsRepositoryInterface;
 use GeekBrains\Blog\Repositories\Users\UserNotFoundException;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryException;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class PostsByAuthor
@@ -32,25 +34,25 @@ final class PostsByAuthor implements ActionInterface
 
     /**
      * @param Request $request
-     * @return JsonResponse
+     * @return Response
      * @throws UsersRepositoryException
      * @throws PostsRepositoryException
      */
-    public function handle(Request $request): JsonResponse
+    public function handle(Request $request): Response
     {
-        $username = $request->query->get('username');
-
-        if (empty($username)) {
-            return new JsonResponse([]);
+        try {
+            $username = $request->query('username');
+        } catch (HttpException) {
+            return new SuccessfulResponse([]);
         }
 
         try {
             $user = $this->usersRepository->getByUsername($username);
         } catch (UserNotFoundException) {
-            return new JsonResponse([]);
+            return new SuccessfulResponse([]);
         }
 
-        return new JsonResponse(array_map(
+        return new SuccessfulResponse(array_map(
             static fn(Post $post) => [
                 'uuid' => (string)$post->uuid(),
                 'author' => [

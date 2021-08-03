@@ -5,6 +5,7 @@ namespace GeekBrains\Blog\UnitTests\Http\Authentication;
 use GeekBrains\Blog\Credentials;
 use GeekBrains\Blog\Http\Authentication\NotAuthenticatedException;
 use GeekBrains\Blog\Http\Authentication\SignatureAuthentication;
+use GeekBrains\Blog\Http\Request;
 use GeekBrains\Blog\Name;
 use GeekBrains\Blog\Repositories\Users\UserNotFoundException;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryException;
@@ -12,10 +13,10 @@ use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
 use GeekBrains\Blog\User;
 use GeekBrains\Blog\UUID;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
- *
+ * Class SignatureAuthenticationTest
+ * @package GeekBrains\Blog\UnitTests\Http\Authentication
  */
 final class SignatureAuthenticationTest extends TestCase
 {
@@ -31,7 +32,7 @@ final class SignatureAuthenticationTest extends TestCase
         $this->expectException(NotAuthenticatedException::class);
         $this->expectExceptionMessage('No authorization header');
 
-        $authentication->user(new Request());
+        $authentication->user(new Request([], []));
     }
 
     /**
@@ -85,7 +86,7 @@ final class SignatureAuthenticationTest extends TestCase
         $this->expectException(NotAuthenticatedException::class);
         $this->expectExceptionMessage('Malformed authorization header');
 
-        $authentication->user(new Request(server: ['HTTP_AUTHORIZATION' => 'some_user']));
+        $authentication->user(new Request([], ['HTTP_AUTHORIZATION' => 'some_user']));
     }
 
     /**
@@ -99,7 +100,7 @@ final class SignatureAuthenticationTest extends TestCase
         $this->expectException(NotAuthenticatedException::class);
         $this->expectExceptionMessage('Malformed token');
 
-        $authentication->user(new Request(server: ['HTTP_AUTHORIZATION' => 'bearer some_user']));
+        $authentication->user(new Request([], ['HTTP_AUTHORIZATION' => 'bearer some_user']));
     }
 
     /**
@@ -113,7 +114,7 @@ final class SignatureAuthenticationTest extends TestCase
         $this->expectException(NotAuthenticatedException::class);
         $this->expectExceptionMessage('No signature in token');
 
-        $authentication->user(new Request(server: ['HTTP_AUTHORIZATION' => 'bearer some_user:']));
+        $authentication->user(new Request([], ['HTTP_AUTHORIZATION' => 'bearer some_user:']));
     }
 
     /**
@@ -127,7 +128,7 @@ final class SignatureAuthenticationTest extends TestCase
         $this->expectException(NotAuthenticatedException::class);
         $this->expectExceptionMessage('No username in token');
 
-        $authentication->user(new Request(server: ['HTTP_AUTHORIZATION' => 'bearer :some_signature']));
+        $authentication->user(new Request([], ['HTTP_AUTHORIZATION' => 'bearer :some_signature']));
     }
 
     /**
@@ -141,7 +142,7 @@ final class SignatureAuthenticationTest extends TestCase
         $this->expectException(NotAuthenticatedException::class);
         $this->expectExceptionMessage('No such user: some_user');
 
-        $authentication->user(new Request(server: ['HTTP_AUTHORIZATION' => 'bearer some_user:some_signature']));
+        $authentication->user(new Request([], ['HTTP_AUTHORIZATION' => 'bearer some_user:some_signature']));
     }
 
     /**
@@ -161,7 +162,7 @@ final class SignatureAuthenticationTest extends TestCase
         $this->expectException(NotAuthenticatedException::class);
         $this->expectExceptionMessage('Wrong signature');
 
-        $authentication->user(new Request(server: ['HTTP_AUTHORIZATION' => 'bearer some_user:some_signature']));
+        $authentication->user(new Request([], ['HTTP_AUTHORIZATION' => 'bearer some_user:some_signature']));
     }
 
     /**
@@ -181,7 +182,7 @@ final class SignatureAuthenticationTest extends TestCase
             ),
         ]));
 
-        $authenticatedUser = $authentication->user(new Request(server: [
+        $authenticatedUser = $authentication->user(new Request([], [
             'HTTP_AUTHORIZATION' => 'bearer some_user:1068111ba18b9010d44a299f81793510f91c33745739842bfa17be94094cf350',
         ]));
 

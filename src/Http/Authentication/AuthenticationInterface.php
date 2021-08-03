@@ -2,8 +2,8 @@
 
 namespace GeekBrains\Blog\Http\Authentication;
 
+use GeekBrains\Blog\Http\Request;
 use GeekBrains\Blog\User;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Interface AuthenticationInterface

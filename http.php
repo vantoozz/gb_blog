@@ -7,20 +7,26 @@ use GeekBrains\Blog\Http\Actions\Posts\DeletePost;
 use GeekBrains\Blog\Http\Actions\Posts\MyPosts;
 use GeekBrains\Blog\Http\Actions\Posts\PostComments;
 use GeekBrains\Blog\Http\Actions\Posts\PostsByAuthor;
+use GeekBrains\Blog\Http\ErrorResponse;
+use GeekBrains\Blog\Http\HttpException;
+use GeekBrains\Blog\Http\Request;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /** @var ContainerInterface $container */
 $container = require __DIR__ . '/bootstrap.php';
 
-$request = Request::createFromGlobals();
+$request = new Request($_GET, $_SERVER);
 
-$uri = strtok($request->getRequestUri(), '?');
+try {
+    $path = $request->path();
+} catch (HttpException $e) {
+    $container->get(LoggerInterface::class)->error($e->getMessage(), ['exception' => $e]);
+    (new ErrorResponse)->send();
+    return;
+}
 
-if (is_file(__DIR__ . '/public/' . $request->getRequestUri())) {
+if (is_file(__DIR__ . '/public' . $path)) {
     return false;
 }
 
@@ -32,18 +38,18 @@ $routes = [
     '/comments' => PostComments::class,
 ];
 
-if (!array_key_exists($uri, $routes)) {
-    $container->get(LoggerInterface::class)->warning("Not found: $uri");
-    (new JsonResponse(status: Response::HTTP_NOT_FOUND))->send();
+if (!array_key_exists($path, $routes)) {
+    $container->get(LoggerInterface::class)->warning("Not found: $path");
+    (new ErrorResponse('Not found'))->send();
     return;
 }
 
 /** @var ActionInterface $action */
-$action = $container->get($routes[$uri]);
+$action = $container->get($routes[$path]);
 
 try {
     $action->handle($request)->send();
 } catch (AppException $e) {
     $container->get(LoggerInterface::class)->error($e->getMessage(), ['exception' => $e]);
-    (new JsonResponse(['success' => false], Response::HTTP_INTERNAL_SERVER_ERROR))->send();
+    (new ErrorResponse)->send();
 }

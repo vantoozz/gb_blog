@@ -5,14 +5,17 @@ namespace GeekBrains\Blog\Http\Actions\Posts;
 use GeekBrains\Blog\Comment;
 use GeekBrains\Blog\Exceptions\InvalidArgumentException;
 use GeekBrains\Blog\Http\Actions\ActionInterface;
+use GeekBrains\Blog\Http\ErrorResponse;
+use GeekBrains\Blog\Http\HttpException;
+use GeekBrains\Blog\Http\Request;
+use GeekBrains\Blog\Http\Response;
+use GeekBrains\Blog\Http\SuccessfulResponse;
 use GeekBrains\Blog\Repositories\Comments\CommentsRepositoryException;
 use GeekBrains\Blog\Repositories\Comments\CommentsRepositoryInterface;
 use GeekBrains\Blog\Repositories\Posts\PostNotFoundException;
 use GeekBrains\Blog\Repositories\Posts\PostsRepositoryException;
 use GeekBrains\Blog\Repositories\Posts\PostsRepositoryInterface;
 use GeekBrains\Blog\UUID;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class PostComments
@@ -34,37 +37,22 @@ final class PostComments implements ActionInterface
 
     /**
      * @param Request $request
-     * @return JsonResponse
+     * @return Response
      * @throws PostsRepositoryException
      * @throws CommentsRepositoryException
      */
-    public function handle(Request $request): JsonResponse
+    public function handle(Request $request): Response
     {
-        $uuidString = $request->query->get('uuid');
-
-        if (empty($uuidString)) {
-            return new JsonResponse([
-                'success' => false,
-                'error' => 'No UUID',
-            ]);
-        }
-
         try {
-            $uuid = new UUID($uuidString);
-        } catch (InvalidArgumentException) {
-            return new JsonResponse([
-                'success' => false,
-                'error' => 'Malformed UUID',
-            ]);
+            $uuid = new UUID($request->query('uuid'));
+        } catch (HttpException | InvalidArgumentException) {
+            return new ErrorResponse('Malformed UUID');
         }
 
         try {
             $post = $this->postsRepository->get($uuid);
         } catch (PostNotFoundException) {
-            return new JsonResponse([
-                'success' => false,
-                'error' => 'No such post',
-            ]);
+            return new ErrorResponse('No such post');
         }
 
         $comments = array_map(
@@ -77,7 +65,7 @@ final class PostComments implements ActionInterface
             $this->commentsRepository->getChildren($post->uuid())
         );
 
-        return new JsonResponse($this->tree($comments, (string)$post->uuid()));
+        return new SuccessfulResponse($this->tree($comments, (string)$post->uuid()));
     }
 
     /**

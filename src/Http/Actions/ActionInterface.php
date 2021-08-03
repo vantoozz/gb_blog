@@ -3,8 +3,9 @@
 namespace GeekBrains\Blog\Http\Actions;
 
 use GeekBrains\Blog\Exceptions\AppException;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use GeekBrains\Blog\Http\Request;
+use GeekBrains\Blog\Http\Response;
+
 
 /**
  * Interface ActionInterface
@@ -12,10 +13,11 @@ use Symfony\Component\HttpFoundation\Request;
  */
 interface ActionInterface
 {
+
     /**
      * @param Request $request
-     * @return JsonResponse
+     * @return Response
      * @throws AppException
      */
-    public function handle(Request $request): JsonResponse;
+    public function handle(Request $request): Response;
 }

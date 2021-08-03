@@ -6,12 +6,15 @@ use GeekBrains\Blog\Exceptions\InvalidArgumentException;
 use GeekBrains\Blog\Http\Actions\ActionInterface;
 use GeekBrains\Blog\Http\Authentication\AuthenticationInterface;
 use GeekBrains\Blog\Http\Authentication\NotAuthenticatedException;
+use GeekBrains\Blog\Http\ErrorResponse;
+use GeekBrains\Blog\Http\HttpException;
+use GeekBrains\Blog\Http\Request;
+use GeekBrains\Blog\Http\Response;
+use GeekBrains\Blog\Http\SuccessfulResponse;
 use GeekBrains\Blog\Repositories\Posts\PostNotFoundException;
 use GeekBrains\Blog\Repositories\Posts\PostsRepositoryException;
 use GeekBrains\Blog\Repositories\Posts\PostsRepositoryInterface;
 use GeekBrains\Blog\UUID;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class DeletePost
@@ -33,56 +36,35 @@ final class DeletePost implements ActionInterface
 
     /**
      * @param Request $request
-     * @return JsonResponse
+     * @return Response
      * @throws PostsRepositoryException
      */
-    public function handle(Request $request): JsonResponse
+    public function handle(Request $request): Response
     {
-        $uuidString = $request->query->get('uuid');
-
-        if (empty($uuidString)) {
-            return new JsonResponse([
-                'success' => false,
-                'error' => 'No UUID',
-            ]);
-        }
-
         try {
-            $uuid = new UUID($uuidString);
-        } catch (InvalidArgumentException) {
-            return new JsonResponse([
-                'success' => false,
-                'error' => 'Malformed UUID',
-            ]);
+            $uuid = new UUID($request->query('uuid'));
+        } catch (HttpException | InvalidArgumentException) {
+            return new ErrorResponse('Malformed UUID');
         }
 
         try {
             $user = $this->authentication->user($request);
         } catch (NotAuthenticatedException) {
-            return new JsonResponse([
-                'success' => false,
-                'error' => 'Not authenticated',
-            ]);
+            return new ErrorResponse('Not authenticated');
         }
 
         try {
             $post = $this->postsRepository->get($uuid);
         } catch (PostNotFoundException) {
-            return new JsonResponse([
-                'success' => false,
-                'error' => 'No such post',
-            ]);
+            return new ErrorResponse('No such post');
         }
 
         if (!$post->authorUuid()->equals($user->uuid())) {
-            return new JsonResponse([
-                'success' => false,
-                'error' => 'Cannot delete someone else\'s post',
-            ]);
+            return new ErrorResponse('Cannot delete someone else\'s post');
         }
 
         $this->postsRepository->delete($uuid);
 
-        return new JsonResponse(['success' => true]);
+        return new SuccessfulResponse(['deleted' => (string)$uuid]);
     }
 }

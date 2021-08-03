@@ -2,11 +2,12 @@
 
 namespace GeekBrains\Blog\Http\Authentication;
 
+use GeekBrains\Blog\Http\HttpException;
+use GeekBrains\Blog\Http\Request;
 use GeekBrains\Blog\Repositories\Users\UserNotFoundException;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryException;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
 use GeekBrains\Blog\User;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class NaiveAuthentication
@@ -32,8 +33,9 @@ final class NaiveAuthentication implements AuthenticationInterface
      */
     public function user(Request $request): User
     {
-        $username = $request->query->get('username');
-        if (empty($username)) {
+        try {
+            $username = $request->query('username');
+        } catch (HttpException) {
             throw new NotAuthenticatedException('No username provided');
         }
 

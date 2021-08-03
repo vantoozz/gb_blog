@@ -2,11 +2,12 @@
 
 namespace GeekBrains\Blog\Http\Authentication;
 
+use GeekBrains\Blog\Http\HttpException;
+use GeekBrains\Blog\Http\Request;
 use GeekBrains\Blog\Repositories\Users\UserNotFoundException;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryException;
 use GeekBrains\Blog\Repositories\Users\UsersRepositoryInterface;
 use GeekBrains\Blog\User;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class SignatureAuthentication
@@ -44,9 +45,9 @@ final class SignatureAuthentication implements AuthenticationInterface
      */
     public function user(Request $request): User
     {
-        $header = $request->headers->get('Authorization');
-
-        if (empty($header)) {
+        try {
+            $header = $request->header('Authorization');
+        } catch (HttpException) {
             throw new NotAuthenticatedException('No authorization header');
         }
 
