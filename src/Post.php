@@ -10,33 +10,33 @@ final class Post
 {
     /**
      * Post constructor.
-     * @param UUID $uuid
-     * @param UUID $authorUuid
+     * @param int $id
+     * @param int $authorId
      * @param string $title
      * @param string $text
      */
     public function __construct(
-        private UUID $uuid,
-        private UUID $authorUuid,
+        private int $id,
+        private int $authorId,
         private string $title,
         private string $text,
     ) {
     }
 
     /**
-     * @return UUID
+     * @return int
      */
-    public function uuid(): UUID
+    public function id(): int
     {
-        return $this->uuid;
+        return $this->id;
     }
 
     /**
-     * @return UUID
+     * @return int
      */
-    public function authorUuid(): UUID
+    public function authorId(): int
     {
-        return $this->authorUuid;
+        return $this->authorId;
     }
 
     /**
@@ -53,5 +53,13 @@ final class Post
     public function text(): string
     {
         return $this->text;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->title . ' >>> ' . $this->text;
     }
 }

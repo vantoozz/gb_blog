@@ -10,23 +10,21 @@ final class User
 {
     /**
      * User constructor.
-     * @param UUID $uuid
+     * @param int $id
      * @param Name $name
-     * @param Credentials $credentials
      */
     public function __construct(
-        private UUID $uuid,
-        private Name $name,
-        private Credentials $credentials
+        private int $id,
+        private Name $name
     ) {
     }
 
     /**
-     * @return UUID
+     * @return int
      */
-    public function uuid(): UUID
+    public function id(): int
     {
-        return $this->uuid;
+        return $this->id;
     }
 
     /**
@@ -35,39 +33,6 @@ final class User
     public function name(): Name
     {
         return $this->name;
-    }
-
-    /**
-     * @param string $password
-     * @return bool
-     */
-    public function checkPassword(string $password): bool
-    {
-        return $this->credentials->check($password);
-    }
-
-    /**
-     * @return string
-     */
-    public function username(): string
-    {
-        return $this->credentials->username();
-    }
-
-    /**
-     * @return string
-     */
-    public function hashedPassword(): string
-    {
-        return $this->credentials->hashedPassword();
-    }
-
-    /**
-     * @return string
-     */
-    public function passwordSalt(): string
-    {
-        return $this->credentials->salt();
     }
 
     /**

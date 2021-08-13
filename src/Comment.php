@@ -10,47 +10,55 @@ final class Comment
 {
 
     /**
-     * @param UUID $uuid
-     * @param UUID $parentUUID
-     * @param UUID $authorUuid
+     * @param int $id
+     * @param int $parentId
+     * @param int $authorId
      * @param string $text
      */
     public function __construct(
-        private UUID $uuid,
-        private UUID $parentUUID,
-        private UUID $authorUuid,
+        private int $id,
+        private int $parentId,
+        private int $authorId,
         private string $text,
     ) {
     }
 
     /**
-     * @return UUID
+     * @return int
      */
-    public function uuid(): UUID
+    public function id(): int
     {
-        return $this->uuid;
+        return $this->id;
     }
 
     /**
-     * @return UUID
+     * @return int
      */
-    public function parentUuid(): UUID
+    public function parentId(): int
     {
-        return $this->parentUUID;
+        return $this->parentId;
     }
 
     /**
-     * @return UUID
+     * @return int
      */
-    public function authorUuid(): UUID
+    public function authorId(): int
     {
-        return $this->authorUuid;
+        return $this->authorId;
     }
 
     /**
      * @return string
      */
     public function text(): string
+    {
+        return $this->text;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
     {
         return $this->text;
     }

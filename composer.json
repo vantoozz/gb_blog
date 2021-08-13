@@ -2,31 +2,12 @@
     "name": "geekbrains/blog",
     "require": {
         "php": "^8.0",
-        "ext-pdo": "*",
-        "ext-mbstring": "*",
         "fakerphp/faker": "^1.15",
-        "monolog/monolog": "^2.3",
-        "php-di/php-di": "^6.3",
-        "symfony/console": "^5.3",
-        "symfony/polyfill-uuid": "^1.23"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^9.5",
         "roave/security-advisories": "dev-latest"
     },
     "autoload": {
         "psr-4": {
             "GeekBrains\\Blog\\": "src/"
         }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "GeekBrains\\Blog\\UnitTests\\": [
-                "tests/unit"
-            ]
-        }
-    },
-    "scripts": {
-        "test": "phpunit --testdox"
     }
 }
