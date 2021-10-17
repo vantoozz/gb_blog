@@ -1,31 +1,28 @@
-<?php declare(strict_types=1);
+<?php
 
 namespace GeekBrains\Blog;
 
-/**
- * Class User
- * @package GeekBrains\Blog
- */
-final class User
+class User
 {
-    /**
-     * User constructor.
-     * @param int $id
-     * @param Name $name
-     */
+    // Добавим свойство username
     public function __construct(
-        private int $id,
+        private UUID $uuid,
+        private string $username,
         private Name $name
     ) {
     }
 
-    /**
-     * @return int
-     */
-    public function id(): int
+
+    public function username(): string
     {
-        return $this->id;
+        return $this->username;
     }
+
+    public function uuid(): UUID
+    {
+        return $this->uuid;
+    }
+
 
     /**
      * @return Name
