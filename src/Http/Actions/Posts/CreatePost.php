@@ -11,6 +11,8 @@ use GeekBrains\Blog\Http\Response;
 use GeekBrains\Blog\Http\SuccessfulResponse;
 use GeekBrains\Blog\Post;
 use GeekBrains\Blog\Repositories\PostsRepository\PostsRepositoryInterface;
+use GeekBrains\Blog\Repositories\UsersRepository\UserNotFoundException;
+use GeekBrains\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
 use GeekBrains\Blog\UUID;
 
 class CreatePost implements ActionInterface
@@ -18,12 +20,25 @@ class CreatePost implements ActionInterface
 
     // Внедряем репозиторий статей
     public function __construct(
-        private PostsRepositoryInterface $postsRepository
+        private PostsRepositoryInterface $postsRepository,
+        private UsersRepositoryInterface $usersRepository,
     ) {
     }
 
     public function handle(Request $request): Response
     {
+        try {
+            $authorUuid = new UUID($request->jsonBodyField('author_uuid'));
+        } catch (HttpException | InvalidArgumentException $e) {
+            return new ErrorResponse($e->getMessage());
+        }
+
+        try {
+            $this->usersRepository->get($authorUuid);
+        } catch (UserNotFoundException $e) {
+            return new ErrorResponse($e->getMessage());
+        }
+
         // Генерируем UUID для новой статьи
         $newPostUuid = UUID::random();
 
@@ -32,11 +47,11 @@ class CreatePost implements ActionInterface
             // из данных запроса
             $post = new Post(
                 $newPostUuid,
-                new UUID($request->jsonBodyField('author_uuid')),
+                $authorUuid,
                 $request->jsonBodyField('title'),
                 $request->jsonBodyField('text'),
             );
-        } catch (HttpException | InvalidArgumentException $e) {
+        } catch (HttpException $e) {
             return new ErrorResponse($e->getMessage());
         }
 

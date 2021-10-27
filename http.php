@@ -7,10 +7,8 @@ use GeekBrains\Blog\Http\Actions\Users\FindByUsername;
 use GeekBrains\Blog\Http\ErrorResponse;
 use GeekBrains\Blog\Http\HttpException;
 use GeekBrains\Blog\Http\Request;
-use GeekBrains\Blog\Repositories\PostsRepository\SqlitePostsRepository;
-use GeekBrains\Blog\Repositories\UsersRepository\SqliteUsersRepository;
 
-require_once __DIR__ . '/vendor/autoload.php';
+$container = require __DIR__ . '/bootstrap.php';
 
 $request = new Request(
     $_GET,
@@ -37,46 +35,30 @@ try {
 }
 
 $routes = [
-    // Добавили еще один уровеь вложенности
-    // для отделения маршрутов,
-    // применяемых к запросам с разными методами
     'GET' => [
-        '/users/show' => new FindByUsername(
-            new SqliteUsersRepository(
-                new PDO('sqlite:' . __DIR__ . '/blog.sqlite')
-            )
-        ),
-        '/posts/show' => new FindByUuid(
-            new SqlitePostsRepository(
-                new PDO('sqlite:' . __DIR__ . '/blog.sqlite')
-            )
-        ),
+        '/users/show' => FindByUsername::class,
+        '/posts/show' => FindByUuid::class,
     ],
     'POST' => [
-        // Дробавили новый маршрут
-        '/posts/create' => new CreatePost(
-            new SqlitePostsRepository(
-                new PDO('sqlite:' . __DIR__ . '/blog.sqlite')
-            )
-        ),
+        '/posts/create' => CreatePost::class,
     ],
 ];
 
 // Если у нас нет маршрутов для метода запроса –
 // возвращаем неуспешный ответ
 if (!array_key_exists($method, $routes)) {
-    (new ErrorResponse('Not found'))->send();
+    (new ErrorResponse("Route not found: $method $path"))->send();
     return;
 }
 
 // Ищем маршрут среди маршрутов для данного метода
 if (!array_key_exists($path, $routes[$method])) {
-    (new ErrorResponse('Not found'))->send();
+    (new ErrorResponse("Route not found: $method $path"))->send();
     return;
 }
 
 // Выбираем действие по метолу и пути
-$action = $routes[$method][$path];
+$action = $container->get($routes[$method][$path]);
 
 try {
     $response = $action->handle($request);

@@ -3,15 +3,10 @@
 use GeekBrains\Blog\Commands\Arguments;
 use GeekBrains\Blog\Commands\CreateUserCommand;
 use GeekBrains\Blog\Exceptions\AppException;
-use GeekBrains\Blog\Repositories\UsersRepository\SqliteUsersRepository;
 
-require_once __DIR__ . '/vendor/autoload.php';
+$container = require __DIR__ . '/bootstrap.php';
 
-$usersRepository = new SqliteUsersRepository(
-    new PDO('sqlite:' . __DIR__ . '/blog.sqlite')
-);
-
-$command = new CreateUserCommand($usersRepository);
+$command = $container->get(CreateUserCommand::class);
 
 try {
     // "Заворачиваем" $argv в объект типа Arguments
