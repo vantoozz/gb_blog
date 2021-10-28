@@ -10,10 +10,19 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 $container = new DIContainer();
 
-$container->bind(PDO::class, new PDO('sqlite:' . __DIR__ . '/blog.sqlite'));
+$container->bind(
+    PDO::class,
+    new PDO('sqlite:' . __DIR__ . '/blog.sqlite')
+);
 
-$container->bind(PostsRepositoryInterface::class, SqlitePostsRepository::class);
-$container->bind(UsersRepositoryInterface::class, SqliteUsersRepository::class);
+$container->bind(
+    PostsRepositoryInterface::class,
+    SqlitePostsRepository::class
+);
+$container->bind(
+    UsersRepositoryInterface::class,
+    SqliteUsersRepository::class
+);
 
 return $container;
 
