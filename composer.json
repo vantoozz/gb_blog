@@ -11,6 +11,11 @@
             "GeekBrains\\Blog\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "GeekBrains\\Blog\\UnitTests\\": "tests/"
+        }
+    },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
         "fakerphp/faker": "^1.15",

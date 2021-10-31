@@ -2,17 +2,17 @@
 
 namespace GeekBrains\Blog\Container;
 
+use Psr\Container\ContainerInterface;
 use ReflectionClass;
-use ReflectionException;
 use ReflectionNamedType;
 
-class DIContainer
+class DIContainer implements ContainerInterface
 {
     private array $resolvers = [];
 
-    public function bind(string $id, $object): void
+    public function bind(string $id, $resolver): void
     {
-        $this->resolvers[$id] = $object;
+        $this->resolvers[$id] = $resolver;
     }
 
     public function has(string $id): bool
@@ -25,33 +25,25 @@ class DIContainer
         }
     }
 
-    public function get(string $id): object
+    public function get(string $className): object
     {
-        if (!array_key_exists($id, $this->resolvers)) {
-            return $this->resolve($id);
+        if (!array_key_exists($className, $this->resolvers)) {
+            return $this->resolve($className);
         }
 
-        $object = $this->resolvers[$id];
+        $resolver = $this->resolvers[$className];
 
-        if (is_object($object)) {
-            return $object;
+        if (is_object($resolver)) {
+            return $resolver;
         }
 
-        if (!is_string($object)) {
-            throw new ContainerException("Cannot resolve $id");
-        }
-
-        try {
-            return $this->resolve($object);
-        } catch (ReflectionException $e) {
-            throw new ContainerException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->resolve((string)$resolver);
     }
 
     private function resolve(string $className): object
     {
         if (!class_exists($className)) {
-            throw new ContainerException("No such class: $className");
+            throw new NotFoundException("No such class: $className");
         }
 
         $reflectionClass = new ReflectionClass($className);
@@ -66,8 +58,14 @@ class DIContainer
         foreach ($constructor->getParameters() as $parameter) {
             $parameterType = $parameter->getType();
             if (!$parameterType instanceof ReflectionNamedType) {
-                throw new ContainerException(
-                    "Cannot find parameter's type $parameter->name @ $className"
+                throw new NotFoundException(
+                    "Cannot find type of $parameter->name @ $className"
+                );
+            }
+
+            if ($parameterType->isBuiltin()) {
+                throw new NotFoundException(
+                    "Cannot resolve built-in class [$parameterType] as $parameter->name @ $className"
                 );
             }
 
