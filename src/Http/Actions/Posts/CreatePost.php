@@ -18,7 +18,7 @@ use GeekBrains\Blog\UUID;
 class CreatePost implements ActionInterface
 {
 
-    // Внедряем репозиторий статей
+    // Внедряем репозитории статей и пользователей
     public function __construct(
         private PostsRepositoryInterface $postsRepository,
         private UsersRepositoryInterface $usersRepository,
@@ -27,12 +27,14 @@ class CreatePost implements ActionInterface
 
     public function handle(Request $request): Response
     {
+        // Пытаемся создать UUID пользователя из данных запроса
         try {
             $authorUuid = new UUID($request->jsonBodyField('author_uuid'));
         } catch (HttpException | InvalidArgumentException $e) {
             return new ErrorResponse($e->getMessage());
         }
 
+        // Пытаемся найти пользователя в репозитории
         try {
             $this->usersRepository->get($authorUuid);
         } catch (UserNotFoundException $e) {

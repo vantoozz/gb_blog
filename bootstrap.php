@@ -1,6 +1,6 @@
 <?php
 
-use GeekBrains\Blog\Container\DIContainer;
+use GeekBrains\Blog\DIContainer\DIContainer;
 use GeekBrains\Blog\Repositories\PostsRepository\PostsRepositoryInterface;
 use GeekBrains\Blog\Repositories\PostsRepository\SqlitePostsRepository;
 use GeekBrains\Blog\Repositories\UsersRepository\SqliteUsersRepository;

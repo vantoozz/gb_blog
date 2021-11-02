@@ -2,8 +2,8 @@
 
 namespace GeekBrains\Blog\Container;
 
-use Psr\Container\NotFoundExceptionInterface;
+use Exception;
 
-class NotFoundException extends ContainerException implements NotFoundExceptionInterface
+class NotFoundException extends Exception
 {
 }

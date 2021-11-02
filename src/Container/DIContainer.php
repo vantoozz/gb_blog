@@ -2,76 +2,16 @@
 
 namespace GeekBrains\Blog\Container;
 
-use Psr\Container\ContainerInterface;
-use ReflectionClass;
-use ReflectionNamedType;
-
-class DIContainer implements ContainerInterface
+class DIContainer
 {
-    private array $resolvers = [];
-
-    public function bind(string $id, $resolver): void
+    public function get(string $type): object
     {
-        $this->resolvers[$id] = $resolver;
-    }
-
-    public function has(string $id): bool
-    {
-        try {
-            $this->get($id);
-            return true;
-        } catch (ContainerException $e) {
-            return false;
-        }
-    }
-
-    public function get(string $className): object
-    {
-        if (!array_key_exists($className, $this->resolvers)) {
-            return $this->resolve($className);
+        // Бросаем исключение, только если класс не существует
+        if (!class_exists($type)) {
+            throw new NotFoundException("Cannot resolve type: $type");
         }
 
-        $resolver = $this->resolvers[$className];
-
-        if (is_object($resolver)) {
-            return $resolver;
-        }
-
-        return $this->resolve((string)$resolver);
-    }
-
-    private function resolve(string $className): object
-    {
-        if (!class_exists($className)) {
-            throw new NotFoundException("No such class: $className");
-        }
-
-        $reflectionClass = new ReflectionClass($className);
-
-        $constructor = $reflectionClass->getConstructor();
-
-        if (null === $constructor || 0 === $constructor->getNumberOfParameters()) {
-            return $reflectionClass->newInstance();
-        }
-
-        $parameters = [];
-        foreach ($constructor->getParameters() as $parameter) {
-            $parameterType = $parameter->getType();
-            if (!$parameterType instanceof ReflectionNamedType) {
-                throw new NotFoundException(
-                    "Cannot find type of $parameter->name @ $className"
-                );
-            }
-
-            if ($parameterType->isBuiltin()) {
-                throw new NotFoundException(
-                    "Cannot resolve built-in class [$parameterType] as $parameter->name @ $className"
-                );
-            }
-
-            $parameters[] = $this->get($parameterType->getName());
-        }
-
-        return $reflectionClass->newInstance(...$parameters);
+        // Создаем объект класса $type
+        return new $type();
     }
 }

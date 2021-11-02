@@ -1,6 +1,6 @@
 <?php
 
-namespace GeekBrains\Blog\Container;
+namespace GeekBrains\Blog\DIContainer;
 
 use Exception;
 use Psr\Container\ContainerExceptionInterface;
