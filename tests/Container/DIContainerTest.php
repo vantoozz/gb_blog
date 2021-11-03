@@ -4,6 +4,8 @@ namespace GeekBrains\Blog\UnitTests\Container;
 
 use GeekBrains\Blog\Container\DIContainer;
 use GeekBrains\Blog\Container\NotFoundException;
+use GeekBrains\Blog\Repositories\UsersRepository\InMemoryUsersRepository;
+use GeekBrains\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
 use PHPUnit\Framework\TestCase;
 
 final class DIContainerTest extends TestCase
@@ -35,6 +37,34 @@ final class DIContainerTest extends TestCase
         // имеет желаемый тип
         $this->assertInstanceOf(
             SomeClassWithoutDependencies::class,
+            $object
+        );
+    }
+
+
+    public function testItResolvesClassByContract(): void
+    {
+        // Создаем объект контейнера
+        $container = new DIContainer();
+
+        // Устанавливаем правило, по которому
+        // всякий раз, когда контейнеру нужно
+        // создать объект, реализующий контракт
+        // UsersRepositoryInterface, он возвращал бы
+        // объект класса InMemoryUsersRepository
+        $container->bind(
+            UsersRepositoryInterface::class,
+            InMemoryUsersRepository::class
+        );
+
+        // Пытаемся получить объект класса,
+        // реализующего контракт UsersRepositoryInterface
+        $object = $container->get(UsersRepositoryInterface::class);
+
+        // Проверяем, что объект, который вернул контейнер,
+        // имеет желаемый тип
+        $this->assertInstanceOf(
+            InMemoryUsersRepository::class,
             $object
         );
     }
