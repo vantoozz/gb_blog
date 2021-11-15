@@ -8,7 +8,7 @@ use GeekBrains\Blog\Repositories\UsersRepository\InMemoryUsersRepository;
 use GeekBrains\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
 use PHPUnit\Framework\TestCase;
 
-final class DIContainerTest extends TestCase
+class DIContainerTest extends TestCase
 {
     public function testItThrowsAnExceptionIfCannotResolveType(): void
     {
@@ -65,6 +65,58 @@ final class DIContainerTest extends TestCase
         // имеет желаемый тип
         $this->assertInstanceOf(
             InMemoryUsersRepository::class,
+            $object
+        );
+    }
+
+    public function testItReturnsPredefinedObject(): void
+    {
+        // Создаем объект контейнера
+        $container = new DIContainer();
+
+        // Устанавливаем правило, по которому
+        // всякий раз, когда контейнеру нужно
+        // вернуть объект типа SomeClass, он
+        // возвращал бы предопределенный объект
+        $container->bind(
+            SomeClassWithParameter::class,
+            new SomeClassWithParameter(42)
+        );
+
+        // Пытаемся получить объект типа SomeClass
+        $object = $container->get(SomeClassWithParameter::class);
+
+        // Проверяем, что контейнер вернул
+        // объект того же типа
+        $this->assertInstanceOf(
+            SomeClassWithParameter::class,
+            $object
+        );
+
+        // Проверяем, что контейнер вернул
+        // тот же самый объект
+        $this->assertSame(42, $object->value());
+    }
+
+    public function testItResolvesClassWithDependencies(): void
+    {
+        // Создаем объект контейнера
+        $container = new DIContainer();
+
+        // Устанавливаем правило получения
+        // объекта типа SomeClassWithParameter
+        $container->bind(
+            SomeClassWithParameter::class,
+            new SomeClassWithParameter(42)
+        );
+
+        // Пытаемся получить объект типа ClassDependingOnAnother
+        $object = $container->get(ClassDependingOnAnother::class);
+
+        // Проверяем, что контейнер вернул
+        // объект нужного нам типа
+        $this->assertInstanceOf(
+            ClassDependingOnAnother::class,
             $object
         );
     }
