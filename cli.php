@@ -4,18 +4,16 @@ use GeekBrains\Blog\Commands\Arguments;
 use GeekBrains\Blog\Commands\CreateUserCommand;
 use GeekBrains\Blog\Exceptions\AppException;
 
+// Подключаем файл bootstrap.php
+// и получаем настроенный контейнер
 $container = require __DIR__ . '/bootstrap.php';
 
+// При помощи контейнера создаем команду
 $command = $container->get(CreateUserCommand::class);
 
 try {
-    // "Заворачиваем" $argv в объект типа Arguments
     $command->handle(Arguments::fromArgv($argv));
-}
-// Так как мы добавили исключение ArgumentsException
-// имеет смысл обрабатывать все исключения приложения,
-// а не только исключение CommandException
-catch (AppException $e) {
+} catch (AppException $e) {
     echo "{$e->getMessage()}\n";
 }
 

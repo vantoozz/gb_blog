@@ -8,6 +8,8 @@ use GeekBrains\Blog\Http\ErrorResponse;
 use GeekBrains\Blog\Http\HttpException;
 use GeekBrains\Blog\Http\Request;
 
+// Подключаем файл bootstrap.php
+// и получаем настроенный контейнер
 $container = require __DIR__ . '/bootstrap.php';
 
 $request = new Request(
@@ -24,16 +26,14 @@ try {
 }
 
 try {
-    // Пытаемся получить HTTP-метод запроса
     $method = $request->method();
 } catch (HttpException) {
-    // Возвращаем неудачный ответ,
-    // если по какой-то причине
-    // не можем получить метод
     (new ErrorResponse)->send();
     return;
 }
 
+// Ассоциируем маршруты с именами классов действий,
+// вместо гтовых объектов
 $routes = [
     'GET' => [
         '/users/show' => FindByUsername::class,
@@ -44,21 +44,22 @@ $routes = [
     ],
 ];
 
-// Если у нас нет маршрутов для метода запроса –
-// возвращаем неуспешный ответ
 if (!array_key_exists($method, $routes)) {
     (new ErrorResponse("Route not found: $method $path"))->send();
     return;
 }
 
-// Ищем маршрут среди маршрутов для данного метода
 if (!array_key_exists($path, $routes[$method])) {
     (new ErrorResponse("Route not found: $method $path"))->send();
     return;
 }
 
-// Выбираем действие по метолу и пути
-$action = $container->get($routes[$method][$path]);
+// Получаем имя класса действия для маршрута
+$actionClassName = $routes[$method][$path];
+
+// С помощью контейнера
+// создаем объект нужного действия
+$action = $container->get($actionClassName);
 
 try {
     $response = $action->handle($request);

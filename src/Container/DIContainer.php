@@ -2,11 +2,28 @@
 
 namespace GeekBrains\Blog\Container;
 
+use Psr\Container\ContainerInterface;
 use ReflectionClass;
 
-class DIContainer
+// Контейнер реализует контракт, отписанный в PSR-11
+class DIContainer implements ContainerInterface
 {
     private array $resolvers = [];
+
+    // Метод has из PSR-11
+    public function has(string $type): bool
+    {
+        // Здесь мы просто пытаемся сздлать
+        // объект требуемого типа
+        try {
+            $this->get($type);
+        } catch (NotFoundException $e) {
+            // Возвращаем false, если объект не создан, ..
+            return false;
+        }
+        // и true, если создан
+        return true;
+    }
 
     public function bind(string $type, $resolver)
     {
