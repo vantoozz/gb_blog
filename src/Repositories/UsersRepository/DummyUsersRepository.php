@@ -18,7 +18,7 @@ class DummyUsersRepository implements UsersRepositoryInterface
     public function get(UUID $uuid): User
     {
         // И тут ничего не делаем
-        throw new UserNotFoundException("Not found");
+        throw new UserNotFoundException('Not found');
     }
 
     public function getByUsername(string $username): User
@@ -26,6 +26,6 @@ class DummyUsersRepository implements UsersRepositoryInterface
         // Нас интересует реализация только этого метода
         // Для нашего теста не важно, что это будет за пользователь,
         // поэтому возвращаем совершенно произвольного
-        return new User(UUID::random(), "some_username", new Name("first_name", "last_name"));
+        return new User(UUID::random(), 'some_username', 'some_password', new Name('first_name', 'last_name'));
     }
 }

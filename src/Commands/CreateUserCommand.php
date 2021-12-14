@@ -6,28 +6,43 @@ use GeekBrains\Blog\Name;
 use GeekBrains\Blog\Repositories\UsersRepository\UserNotFoundException;
 use GeekBrains\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
 use GeekBrains\Blog\User;
-use GeekBrains\Blog\UUID;
+use Psr\Log\LoggerInterface;
 
 class CreateUserCommand
 {
     public function __construct(
-        private UsersRepositoryInterface $usersRepository
+        private UsersRepositoryInterface $usersRepository,
+        private LoggerInterface $logger,
     ) {
     }
 
     public function handle(Arguments $arguments): void
     {
+        $this->logger->info("Create user command started");
+
         $username = $arguments->get('username');
 
         if ($this->userExists($username)) {
-            throw new CommandException("User already exists: $username");
+            $this->logger->warning("User already exists: $username");
+            return;
         }
 
-        $this->usersRepository->save(new User(
-            UUID::random(),
+        // Создаем объект пользователя
+        // Функия createFrom сама создат UUID
+        // и захэширует пароль
+        $user = User::createFrom(
             $username,
-            new Name($arguments->get('first_name'), $arguments->get('last_name'))
-        ));
+            $arguments->get('password'),
+            new Name(
+                $arguments->get('first_name'),
+                $arguments->get('last_name')
+            )
+        );
+
+        $this->usersRepository->save($user);
+
+        // Поллучаем UUID созданного пользователя
+        $this->logger->info('User created: ' . $user->uuid());
     }
 
     private function userExists(string $username): bool
