@@ -3,8 +3,8 @@
 namespace GeekBrains\Blog\Http\Actions\Posts;
 
 use GeekBrains\Blog\Http\Actions\ActionInterface;
-use GeekBrains\Blog\Http\Auth\AuthenticationInterface;
 use GeekBrains\Blog\Http\Auth\AuthException;
+use GeekBrains\Blog\Http\Auth\TokenAuthenticationInterface;
 use GeekBrains\Blog\Http\ErrorResponse;
 use GeekBrains\Blog\Http\HttpException;
 use GeekBrains\Blog\Http\Request;
@@ -19,7 +19,8 @@ class CreatePost implements ActionInterface
 {
     public function __construct(
         private PostsRepositoryInterface $postsRepository,
-        private AuthenticationInterface $authentication,
+        // Аутентификация по токену
+        private TokenAuthenticationInterface $authentication,
         private LoggerInterface $logger,
     ) {
     }

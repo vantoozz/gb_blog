@@ -1,6 +1,6 @@
 <?php
 
-use GeekBrains\Blog\Exceptions\AppException;
+use GeekBrains\Blog\Http\Actions\Auth\LogIn;
 use GeekBrains\Blog\Http\Actions\Posts\CreatePost;
 use GeekBrains\Blog\Http\Actions\Posts\FindByUuid;
 use GeekBrains\Blog\Http\Actions\Users\FindByUsername;
@@ -47,6 +47,8 @@ $routes = [
         '/posts/show' => FindByUuid::class,
     ],
     'POST' => [
+        // Добавили маршрут обмена пароля на токен
+        '/login' => LogIn::class,
         '/posts/create' => CreatePost::class,
     ],
 ];
@@ -62,11 +64,10 @@ if (!array_key_exists($method, $routes)
 
 $actionClassName = $routes[$method][$path];
 
-$action = $container->get($actionClassName);
-
 try {
+    $action = $container->get($actionClassName);
     $response = $action->handle($request);
-} catch (AppException $e) {
+} catch (Exception $e) {
     // Логируем сообщение с уровнем ERROR
     $logger->error($e->getMessage(), ['exception' => $e]);
     // Больше не отправляем пользователю

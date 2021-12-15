@@ -9,7 +9,8 @@ use GeekBrains\Blog\Repositories\UsersRepository\UserNotFoundException;
 use GeekBrains\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
 use GeekBrains\Blog\User;
 
-class PasswordAuthentication implements AuthenticationInterface
+// Теперь класс явно реализует контракт аутентификации по паролю
+class PasswordAuthentication implements PasswordAuthenticationInterface
 {
 
     public function __construct(

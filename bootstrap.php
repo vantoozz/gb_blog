@@ -2,8 +2,12 @@
 
 use Dotenv\Dotenv;
 use GeekBrains\Blog\Container\DIContainer;
-use GeekBrains\Blog\Http\Auth\AuthenticationInterface;
+use GeekBrains\Blog\Http\Auth\BearerTokenAuthentication;
 use GeekBrains\Blog\Http\Auth\PasswordAuthentication;
+use GeekBrains\Blog\Http\Auth\PasswordAuthenticationInterface;
+use GeekBrains\Blog\Http\Auth\TokenAuthenticationInterface;
+use GeekBrains\Blog\Repositories\AuthTokensRepository\AuthTokensRepositoryInterface;
+use GeekBrains\Blog\Repositories\AuthTokensRepository\SqliteAuthTokensRepository;
 use GeekBrains\Blog\Repositories\PostsRepository\PostsRepositoryInterface;
 use GeekBrains\Blog\Repositories\PostsRepository\SqlitePostsRepository;
 use GeekBrains\Blog\Repositories\UsersRepository\SqliteUsersRepository;
@@ -24,8 +28,18 @@ $container->bind(
 );
 
 $container->bind(
-    AuthenticationInterface::class,
+    PasswordAuthenticationInterface::class,
     PasswordAuthentication::class
+);
+
+$container->bind(
+    TokenAuthenticationInterface::class,
+    BearerTokenAuthentication::class
+);
+
+$container->bind(
+    AuthTokensRepositoryInterface::class,
+    SqliteAuthTokensRepository::class
 );
 
 $container->bind(
